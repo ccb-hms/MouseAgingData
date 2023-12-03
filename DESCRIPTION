@@ -12,3 +12,9 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Imports: 
+    BiocGenerics,
+    ExperimentHub,
+    methods,
+    S4Vectors,
+    SingleCellExperiment
