@@ -1,0 +1,45 @@
+---
+title: "Quick OSCA workflow on Parabiosis Mouse Data"
+author: "Tram N. Nguyen"
+date: "November 27, 2023"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick OSCA workflow on Parabiosis Mouse Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  tidy.opts = list(width.cutoff = 100), tidy = TRUE
+)
+```
+
+```{r, setup, message=FALSE}
+library(MouseAgingData)
+library(devtools)
+#library(DropletUtils)
+#library(edgeR)
+#library(Seurat)
+#library(scran)
+#library(ggplot2)
+#library(edgeR)
+#library(SingleCellExperiment)
+```
+
+## Introduction
+
+This performs a simple analysis of the Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)) 10X Genomics parabiosis dataset. The analysis follows the Basics of Single-Cell Analysis in the [OSCA Bioconductor book](https://bioconductor.org/books/3.13/OSCA.basic/). Steps in this vignette include: quality control, normalization, various forms of dimensionality reduction, clustering into subpopulations, detection of marker genes, and annotation of cell types. 
+
+## Data Loading
+```{r, Data Loading}
+library(MouseAgingData)
+data(parabiosis_metadata)
+
+# Load barcodes, genes, and matrix files using DropletUtils
+#barcodes <- read.table("raw_files/10X/barcodes.tsv", header = FALSE, stringsAsFactors = FALSE)
+#genes <- read.table("raw_files/10X/genes.tsv", header = FALSE, stringsAsFactors = FALSE)
+#metadata <- read.table("raw_files/filtered.metadata.txt", header = TRUE, sep = "") #105329 2
+```
