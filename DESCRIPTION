@@ -1,11 +1,12 @@
 Package: MouseAgingData
 Title: Multi-omics Data Across Several Mouse Aging Projects from Rubin Lab
-Version: 0.0.0.9000
+Version: 0.99.0
 Authors@R: 
     person("Tram", "Nguyen", , "Tram_Nguyen@hms.harvard.edu", role = c("aut", "cre"))
 Description: This package includes analysis-ready data resource of different aging omics datasets including the aging mouse brain single cell study (Ximerakis et al., 2019), aging mouse brain parabiosis single cell study (Ximerakis et al., 2023), aging mouse brain parabiosis proteomics study (Rubin lab, unpublished), aging mouse brain microbiome manipulation single nucleus study (Rubin lab, unpublished), and microbiome manipulation plasma proteomics (Rubin lab, unpublished). In addition to these studies from the Rubin lab, there are two relevant transcriptomic studies of rejuvenation available in the GEO database, an aging mouse caloric restriction single cell study (GSE137869, Ma et al., 2020), and an aging mouse exercise single cell study (GSE196364, Liu et al., 2022). 
 License: MIT + file LICENSE
 Encoding: UTF-8
+biocViews: ExperimentData, ExpressionData, SequencingData, RNASeqData, SingleCellData, ExperimentHub, Mus_musculus_Data
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3.9000
 Suggests: 
