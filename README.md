@@ -1,6 +1,6 @@
 # MouseAgingData
 
-### Mouse aging multi-omics project data from Lee Rubin Lab at Harvard Medical School
+## Mouse aging multi-omics project data from Lee Rubin Lab at Harvard Medical School
 
 This package includes analysis-ready data resource of different 
 aging omics datasets, including the aging mouse brain single cell study 
@@ -12,7 +12,47 @@ aging mouse exercise single cell study (GSE196364, Liu et al., 2022).
 
 <br>
 
-#### Ximerakis et al. 2023 Parabiosis 10X Genomics Single-Cell Data
+
+## Installation
+
+Install the package from Bioconductor or GitHub, ensuring correct
+*Bioconductor* dependencies.
+
+When the package is available on *Bioconductor*, use
+
+``` r
+if (!"BiocManager" %in% rownames(installed.packages()))
+    install.packages("BiocManager", repos = "https://cloud.R-project.org")
+if (BiocManager::version() >= "3.19") {
+    BiocManager::install("AlphaMissenseR")
+} else {
+    stop(
+        "'MouseAgingData' requires Bioconductor version 3.19 or later, ",
+        "install from GitHub?"
+    )
+}
+```
+
+Use the pre-release or development version with
+
+``` r
+if (!"remotes" %in% rownames(installed.packages()))
+    install.packages("remotes", repos = "https://cloud.R-project.org")
+remotes::install_github(
+    "hms-ccb/MouseAgingData",
+    repos = BiocManager::repositories()
+)
+```
+
+Load the library.
+
+``` r
+library(MouseAgingData)
+```
+
+## Datasets
+
+#### 1. Ximerakis et al. 2023 Parabiosis 10X Genomics Single-Cell Data
 
 This package contains the processed 10X Genomics data from Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)) prepared based on 
 the protocol detailed in their paper. The processed dataset contains 
