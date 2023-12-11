@@ -4,7 +4,7 @@
 \alias{getWebData}
 \title{Get data from web repository via a URL link}
 \usage{
-getWebData(format, url, destination, gzipped = TRUE, sep = "\\t", headers = T)
+getWebData(format, url, destination, gzipped = TRUE, sep = "\\t", header = T)
 }
 \arguments{
 \item{format}{A character string. Describes input file format, "tsv", "csv", or "mtx".}
@@ -17,7 +17,7 @@ getWebData(format, url, destination, gzipped = TRUE, sep = "\\t", headers = T)
 
 \item{sep}{The field separator character. Follow values documented in read.table function.}
 
-\item{headers}{A logical value indicating whether the file contains the names of the variables as its first line. Again, refer to read.table function.}
+\item{header}{A logical value indicating whether the file contains the names of the variables as its first line. Again, refer to read.table function.}
 }
 \value{
 A data frame or matrix.

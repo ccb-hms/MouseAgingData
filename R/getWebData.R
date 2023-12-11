@@ -5,7 +5,7 @@
 #' @param destination A character string. Local destination to download file.
 #' @param gzipped Boolean. Describes whether web file is gzipped. Defaults to TRUE.
 #' @param sep The field separator character. Follow values documented in read.table function.
-#' @param headers A logical value indicating whether the file contains the names of the variables as its first line. Again, refer to read.table function.
+#' @param header A logical value indicating whether the file contains the names of the variables as its first line. Again, refer to read.table function.
 #'
 #' @return A data frame or matrix.
 #' @export
@@ -13,7 +13,7 @@
 #' @examples
 #' test <- getWebData(format = "tsv", destination = "~/Desktop/", url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE222nnn/GSE222510/suppl/GSE222510_processed_barcodes.tsv.gz", header=F)
 #' head(test)
-getWebData <- function(format, url, destination, gzipped = TRUE, sep = "\t", headers = T){
+getWebData <- function(format, url, destination, gzipped = TRUE, sep = "\t", header = T){
   writeLines(paste0("Loading in", format, "file from the Web to local location:", destination,".\n"))
 
   ### Get file name URL
