@@ -1,7 +1,7 @@
 ---
 title: "Quick OSCA workflow on Parabiosis Mouse Data"
 author: "Tram N. Nguyen"
-date: "7 December, 2023"
+date: "11 December, 2023"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Quick OSCA workflow on Parabiosis Mouse Data}
@@ -32,139 +32,194 @@ library(SingleCellExperiment)
 
 This vignette performs a simple analysis of the Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)) 10X Genomics 
 parabiosis dataset. The analysis follows the Basics of Single-Cell Analysis in 
-the [OSCA Bioconductor book](https://bioconductor.org/books/3.13/OSCA.basic/). 
+the [OSCA Bioconductor book Quick Start Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple). 
 Steps in this vignette include: quality control, normalization, 
 various forms of dimensionality reduction, clustering into subpopulations, 
 detection of marker genes, and annotation of cell types. 
 
+
 ## Data Loading
 
-```{r, Data Loading}
-library(MouseAgingData)
-data(parabiosis_metadata)
+#### Information about the dataset
+Initial dataset - 158,767 cells with data for 21,876 genes
+Parabiosis single cell RNA-seq (Ximerakis, Holton et al Nature Aging 2023)
+105,329 cells, 31 cell types
+8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY
+20905 features
+Processed:
+(ALL) reduced to: OLG, OPC, GLUT, GABA, EC, ASC
+Aging OX v YX; RJV: OY v OX; AGA YO v YX
 
-# Load barcodes, genes, and matrix files using DropletUtils
-#barcodes <- read.table("raw_files/10X/barcodes.tsv", header = FALSE, stringsAsFactors = FALSE)
-#genes <- read.table("raw_files/10X/genes.tsv", header = FALSE, stringsAsFactors = FALSE)
-#metadata <- read.table("raw_files/filtered.metadata.txt", header = TRUE, sep = "") #105329 2
+<br>
+
+#### Make the SingleCellExperiment Object. 
+Load barcodes, genes, and matrix files using DropletUtils
+
+```{r, Data Loading}
+
+library(MouseAgingData)
+
+# getWebData(format = "tsv", destination = "~/Desktop/", url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE222nnn/GSE222510/suppl/GSE222510_processed_barcodes.tsv.gz", header=F)
+
+# Eventually we can load in data through our package
+
+filepath = "~/Documents/Rubin Mouse Aging/data/parabiosis/"
+
+# load in components
+barcodes <- read.table(paste0(filepath, "raw_files/10X/barcodes.tsv"), header = FALSE, stringsAsFactors = FALSE)
+genes <- read.table(paste0(filepath,"raw_files/10X/genes.tsv"), header = FALSE, stringsAsFactors = FALSE)
+metadata <- read.table(paste0(filepath, "raw_files/filtered.metadata.txt"), header = TRUE, sep = "") #105329 2
+
+# Put all together in SCE
+sce <- read10xCounts(paste0(filepath,"raw_files/10X/"), col.names = FALSE)
+sce
 ```
 
-# Check Parabiosis Mouse Aging Data for Bioconductor preparation
-# Tram N. Nguyen
-# Nov 29, 2023
+Do some quick QC to make sure the data loaded in correctly, and is what we expected.
 
-setwd("/Users/ccb/Documents/Rubin Mouse Aging/data/parabiosis")
+```{r, Data check}
+colData(sce) # Sample metadata - just the cell barcodes
 
-# Initial dataset - 158,767 cells with data for 21,876 genes
+rowData(sce) # DataFrame with 20905 genes ID -- matches the features in their paper
 
-# Parabiosis single cell RNA-seq (Ximerakis, Holton et al Nature Aging 2023)
-# 105,329 cells, 31 cell types
-# 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY
-# 20905 features
-# Processed:
-  # (ALL) reduced to: OLG, OPC, GLUT, GABA, EC, ASC
-  # Aging OX v YX; RJV: OY v OX; AGA YO v YX
+dim(sce)
 
-# Load packages
-# remotes::install_github("MarioniLab/DropletUtils")
-# BiocManager::install("DropletUtils")
-# BiocManager::install("edgeR", force=T, dependencies=T) # no errors
-# If errors in finding libraries -- restart R session.
-library(devtools)
-library(DropletUtils)
-library(edgeR)
-library(Seurat)
-library(ggplot2)
-library(SingleCellExperiment)
-# library(scran)
+head(counts(sce)) # The count matrix. Transcript for each gene per cell (column) -- NOT NORMALIZED
 
-# Load in RDS objects from Kris
+# Grab the animal columns to investigate
+df = cbind(metadata$animal, metadata$animal_name)
+df = as.data.frame(unique(df))
+table(df$V2)
+```
 
-# Install scran -- problem installing
-# BiocManager::valid() # Seems like edgeR was out of date -- updated edgeR to the latest version 4.0.2
-# install.packages("../../edgeR_4.0.2.tgz",repos = NULL, type ="source") # this works.
 
-BiocManager::install("scran", force=T) # In install.packages(...) :installation of package 'scran' had non-zero exit status
+#### Add the metadata to the sce object
+We can add metadata to describe the columns of our primary data, e.g., the samples or cells of our experiment. This is stored in the colData slot, a DataFrame object where rows correspond to cells and columns correspond to metadata fields, e.g., batch of origin, treatment condition
 
-remotes::install_github("MarioniLab/scran") # ERROR: compilation failed for package ‘scran’
-#* removing ‘/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/scran’
-#* restoring previous ‘/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/scran’
-#Warning message:
-#  In i.p(...) :
-#  installation of package '/var/folders/m_/wqklmb9x4y31xt0wpvqk69jr0000gp/T//RtmpnBhLOw/file17041dc67408/scran_1.29.3.tar.gz' had non-zero exit status
+```{r, add metadata}
+dim(metadata) # Info for each cell (row n=10k). In the counts assay cells are columns.
+SummarizedExperiment::colData(sce) <- DataFrame(metadata)
+```
 
-install.packages("../../scran_1.30.0.tgz",repos = NULL, type ="source")
+View our new `SingleCellExperiment` object. We see there are 12 ColData names now.
+
+```{r, add metadata cont}
+sce
+head(colData(sce))
+
+# check that rows and columns are the same number of cells
+stopifnot(identical(length(metadata$barcode), ncol(counts(sce)))) # Number of barcodes should match columns of assay
+```
+
+## Quality control
+
+Explore and visualize mitochondrial content and read count.
+<span style="color:blue">*Note:* this is just an example from the scRNAseq package.</span>.
+
+<br>
+
+```{r, QC check}
+library(scRNAseq)
+library(AnnotationDbi)
+
+ah = AnnotationHub()
+ahs2 <- query(ah, c("Ensembl", "Mus musculus"))
+
+sce.mam <- BachMammaryData(samples="G_1")
+library(scater)
+rownames(sce.mam) <- uniquifyFeatureNames(
+    rowData(sce.mam)$Ensembl, rowData(sce.mam)$Symbol)
+
+library(AnnotationHub)
+ens.mm.v97 <- AnnotationHub()[["AH73905"]]
+rowData(sce.mam)$SEQNAME <- mapIds(ens.mm.v97, keys=rowData(sce.mam)$Ensembl,
+    keytype="GENEID", column="SEQNAME")
+
+unfiltered <- sce.mam
+is.mito <- rowData(sce.mam)$SEQNAME == "MT"
+stats <- perCellQCMetrics(sce.mam, subsets=list(Mito=which(is.mito)))
+qc <- quickPerCellQC(stats, percent_subsets="subsets_Mito_percent")
+sce.mam <- sce.mam[,!qc$discard]
+colData(unfiltered) <- cbind(colData(unfiltered), stats)
+unfiltered$discard <- qc$discard
+
+gridExtra::grid.arrange(
+    plotColData(unfiltered, y="sum", colour_by="discard") + 
+        scale_y_log10() + ggtitle("Total count"),
+    plotColData(unfiltered, y="detected", colour_by="discard") + 
+        scale_y_log10() + ggtitle("Detected features"),
+    plotColData(unfiltered, y="subsets_Mito_percent", 
+        colour_by="discard") + ggtitle("Mito percent"),
+    ncol=2
+)
+
+```
+
+```{r, QC plot2}
+plotColData(unfiltered, x="sum", y="subsets_Mito_percent", 
+    colour_by="discard") + scale_x_log10()
+```
+
+Figure 12.2: Percentage of mitochondrial reads in each cell in the Bach mammary gland dataset compared to its total count. Each point represents a cell and is colored according to whether that cell was discarded.
+
+<br>
+
+## Normalization
+
+```{r, normalize}
+
 library(scran)
+set.seed(101000110)
+clusters <- quickCluster(sce)
+sce.mam <- computeSumFactors(sce.mam, clusters=clusters)
+sce.mam <- logNormCounts(sce.mam)
 
 
-###############################################
-#### Working with normalized dataset first ####
-###############################################
+sce <- scuttle::logNormCounts(sce)
+logcounts(sce)
+
+```
+
+## Feature selection.
+
+Looks like these steps are all done already even with the raw data available - subsettted to final number of gene features (n=20905).
+
+<br>
+
+```{r, feat select}
+library(scran)
+dec <- modelGeneVar(sce)
+hvg <- getTopHVGs(dec, prop=0.1)
+```
+
+## PCA.
+
+```{r, PCA}
+set.seed(1234)
+sce <- runPCA(sce, ncomponents=25, subset_row=hvg)
+```
+
+## Clustering.
+
+```{r, clustering}
+library(bluster)
+colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
+                               BLUSPARAM=NNGraphParam(cluster.fun="louvain"))
+```
 
 
-### Explore the scaled O Y all cells .rds first ###
+## Visualization.
 
-normOY.all <- readRDS('norm_files_parabiosis.norm.scaled.old.young.all.cells.v1.rds') # What is this?
-# Seurat object
-# Assay data with 20905 features for 37337 cells
-# Top 10 variable features:
-  # Hbb-bs, Hba-a1, Ttr, Hba-a2, Hbb-bt, S100a8, S100a9, Mgp, Cd74, Retnlg
-
-# Many fewer cells in this object - compare the unique cell barcodes to see whats missing
-
-norm_barcodes <- rownames(normOY.all@meta.data) # extract just the barcode
-
-# Extract substring after the pattern using sub
-norm_barcodes <- sub(paste0(".*", "6_"), "", norm_barcodes)
-
-nbar2 <- sub(paste0(".*", "L_"), "", nbarcodes$V1)
-
-diff1 <- setdiff(nbar2, norm_barcodes) # 99192 cells that are not in normalized data but are in the RAW
-# What is in nbar2 raw and NOT in norm_barcodes -- These must have been filtered out?
-
-# Explore what these cells are?
-
-diff2 <- setdiff(norm_barcodes, nbar2) # 31200 cells in normalized data that's NOT in raw.
-nbar2[nbar2 %in% diff2]
-
-diff.all <- c(diff1, diff2)
-length(unique(diff.all)) #130392 Barcodes that dont match between the datasets
+Start with a UMAP.
+```{r, UMAP}
+sce <- runUMAP(sce, dimred = 'PCA')
+plotUMAP(sce, colour_by="label")
+```
 
 
+Now, TSNE plot.
 
-### Starting with the other files
-nmat <- Matrix::readMM("norm_files/parabiosis.norm.scaled.renamed.mat.v1.mtx") # scaled and normalized how
-nbarcodes <- read.delim("norm_files/parabiosis.norm.scaled.renamed.barcodes.v1.csv", header = F)
-ngenes <- read.delim("norm_files/parabiosis.norm.scaled.renamed.genes.v1.csv", header = F)
-
-
-dim(nmat) #20905 genes and 105329 cells
-
-# No gene names yet in matrix, add them
-row.names(nmat) <- ngenes$V1
-head(nmat)
-head(counts(rubin)) # looks like it matches
-
-colnames(nmat) <- nbarcodes$V1
-
-
-# Assign the cell barcodes as column names and genes as rows
-coldata <- read.delim("raw_files/filtered.metadata.txt")
-n_rubin <- SingleCellExperiment(assays = list(logcounts=nmat), colData=coldata)
-n_rubin
-
-
-# QC should have already been done.
-# Run PCA 50 pcs
-library(BiocSingular)
-set.seed(101010011)
-
-n_rubin2 <- runPCA(n_rubin, ncomponents=50, BSPARAM=BiocSingular::ExactParam())
-plotReducedDim(n_rubin2, dimred="PCA", colour_by="cell_type")
-plotReducedDim(n_rubin2, dimred="PCA", ncomponents=4,
-               colour_by="cell_type")
-
-
+```{r, TSNE}
 # Run TSNE
 set.seed(00101001101)
 
@@ -172,148 +227,10 @@ set.seed(00101001101)
 # for re-use across multiple plotReducedDim() calls.
 n_rubin2 <- runTSNE(n_rubin2, dimred="PCA")
 plotReducedDim(n_rubin2, dimred="TSNE", colour_by="cell_type", text_by = "cell_type")
-
-# Run UMAP
-set.seed(1100101001)
-n_rubin2 <- runUMAP(n_rubin2, dimred="PCA")
-scater::plotReducedDim(n_rubin2, dimred="UMAP", colour_by="cell_type", text_by = "cell_type")
+```
 
 
-n_rubin <- runTSNE(n_rubin, dimred="PCA")
-ncol(reducedDim(sce.mam, "PCA"))
-
-# Compare with Ximerakis et al. 2023 Parabiosis Fig 1C UMAP -- looks similar.
-
-
-
-###############################################
-#### Using their raw 10X Genomics data now ####
-###############################################
-
-# FOLLOW OSCA QUICK START WORKFLOW: https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple
-
-# Load in existing data from Kris
-oMeta = readRDS('raw_files/metadata_original.rds')
-otsne = readRDS('raw_files/tsne_original.rds')
-oUMAP = readRDS('raw_files/umap_original.rds')
-
-
-# Whats different between original and filtered metadata
-library(diffdf)
-diffdf(oMeta, metadata) # base versus compare
-# Columns in original metadata not in filtered
-
-#Batch
-#Detected_Transcripts
-#RNA_snn_res.2
-#seurat_clusters
-#sub_cluster
-#sub_cluster_small
-#sub_cluster_big
-#RNA_snn_res.1
-
-# Original metadata does not have animal names or animal type
-# Kris split the sample_order column into the animal and pairing info
-
-# Grab the animal columns to investigate
-df = cbind(metadata$animal, metadata$animal_name)
-df = as.data.frame(unique(df))
-table(df$V2)
-# 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY # Matches their paper
-
-
-# Make the SingleCellExperiment Object
-# Load barcodes, genes, and matrix files using DropletUtils
-barcodes <- read.table("raw_files/10X/barcodes.tsv", header = FALSE, stringsAsFactors = FALSE)
-genes <- read.table("raw_files/10X/genes.tsv", header = FALSE, stringsAsFactors = FALSE)
-metadata <- read.table("raw_files/filtered.metadata.txt", header = TRUE, sep = "") #105329 2
-
-# matrix.mtx = MatrixMarket matrix coordinate integer general
-
-# Put all together in SCE
-rubin <- read10xCounts("raw_files/10X/", col.names = FALSE)
-rubin
-
-colData(rubin) # Sample metadata - just the cell barcodes
-rowData(rubin) # DataFrame with 20905 genes ID -- matches the features in their paper
-
-dim(assay(rubin, "counts"))
-head(counts(rubin)) # The count matrix. Transcript for each gene per cell (column) -- NOT NORMALIZED
-
-
-# Add the metadata to the sce object
-# we can add metadata to describe the columns of our primary data, e.g., the samples or cells of our experiment. This is stored in the colData slot, a DataFrame object where rows correspond to cells and columns correspond to metadata fields, e.g., batch of origin, treatment condition
-
-dim(metadata) # Info for each cell (row n=10k). In the counts assay cells are columns.
-SummarizedExperiment::colData(rubin) <- DataFrame(metadata)
-rubin
-head(colData(rubin))
-
-# check that rows and columns are the same number of cells
-stopifnot(identical(length(metadata$barcode), ncol(counts(rubin)))) # Number of barcodes should match columns of assay
-
-stopifnot(identical(metadata$barcode, colnames(counts(rubin))))
-# Colnames of the counts matrix is missing (Needs to be the cell ID or barcode)
-
-
-### QC? ### Need to map on mouse annotation to extract MT sequences?
-# These steps seem like they are all done already by Kris -- still proceed?
-
-library(scRNAseq)
-sce.mam <- BachMammaryData(samples="G_1")
-
-library(scater)
-rownames(sce.mam) <- uniquifyFeatureNames(
-  rowData(sce.mam)$Ensembl, rowData(sce.mam)$Symbol) # Changed ENSEMBL IDs to unique gene names
-
-library(AnnotationHub)
-ens.mm.v97 <- AnnotationHub()[["AH73905"]]
-rowData(sce.mam)$SEQNAME <- mapIds(ens.mm.v97, keys=rowData(sce.mam)$Ensembl,
-                                   keytype="GENEID", column="SEQNAME")
-
-
-unfiltered <- sce.mam
-
-
-is.mito <- rowData(sce.mam)$SEQNAME == "MT"
-stats <- perCellQCMetrics(sce.mam, subsets=list(Mito=which(is.mito)))
-qc <- quickPerCellQC(stats, percent_subsets="subsets_Mito_percent")
-sce.mam <- sce.mam[,!qc$discard]
-
-
-### Start at Normalization step?
-sce <- scuttle::logNormCounts(rubin)
-logcounts(sce) # Just a note that this does NOT match Kris' normalized assay -- must be a different scaling factor?
-
-
-# Try seurat
-# test <- LogNormalize(rubin, scale.factor = 10000, margin = 2L, verbose = TRUE) # Needs to be seurat object
-
-
-# Feature selection.
-# These steps are all done already... even with raw data? Because already subsettted to final number of gene features (n=20905)
-library(scran)
-dec <- modelGeneVar(sce)
-hvg <- getTopHVGs(dec, prop=0.1)
-
-# PCA.
-library(scater)
-set.seed(1234)
-sce <- runPCA(sce, ncomponents=25, subset_row=hvg)
-
-# Clustering.
-library(bluster)
-colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
-                               BLUSPARAM=NNGraphParam(cluster.fun="louvain"))
-
-# Visualization.
-sce <- runUMAP(sce, dimred = 'PCA')
-plotUMAP(sce, colour_by="label")
-
-
-
-
-
-
-
+```{r, sesh info}
+sessioninfo()
+```
 
