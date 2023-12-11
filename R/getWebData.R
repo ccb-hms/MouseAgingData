@@ -11,7 +11,9 @@
 #' @export
 #'
 #' @examples
-#' test <- getWebData(format = "tsv", destination = "~/Desktop/", url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE222nnn/GSE222510/suppl/GSE222510_processed_barcodes.tsv.gz", header=F)
+#' test <- getWebData(format = "tsv", destination = "~/Desktop/",
+#' url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE222nnn/GSE222510/suppl/GSE222510_processed_barcodes.tsv.gz",
+#' header=F)
 #' head(test)
 getWebData <- function(format, url, destination, gzipped = TRUE, sep = "\t", header = T){
   writeLines(paste0("Loading in", format, "file from the Web to local location:", destination,".\n"))
