@@ -24,7 +24,7 @@ When the package is available on *Bioconductor*, use
 if (!"BiocManager" %in% rownames(installed.packages()))
     install.packages("BiocManager", repos = "https://cloud.R-project.org")
 if (BiocManager::version() >= "3.19") {
-    BiocManager::install("AlphaMissenseR")
+    BiocManager::install("MouseAgingData")
 } else {
     stop(
         "'MouseAgingData' requires Bioconductor version 3.19 or later, ",
