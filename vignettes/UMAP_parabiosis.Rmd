@@ -26,6 +26,7 @@ library(Seurat)
 library(scran)
 library(ggplot2)
 library(SingleCellExperiment)
+library(AnnotationHub)
 ```
 
 ## Introduction
@@ -114,13 +115,14 @@ stopifnot(identical(length(metadata$barcode), ncol(counts(sce)))) # Number of ba
 ## Quality control
 
 Explore and visualize mitochondrial content and read count.
-<span style="color:blue">*Note:* this is just an example from the scRNAseq package.</span>.
+<span style="color:blue">*Note:* this is just an example from the scRNAseq package.</span>
 
 <br>
 
 ```{r, QC check}
 library(scRNAseq)
 library(AnnotationDbi)
+library(AnnotationHub)
 
 ah = AnnotationHub()
 ahs2 <- query(ah, c("Ensembl", "Mus musculus"))
@@ -130,7 +132,6 @@ library(scater)
 rownames(sce.mam) <- uniquifyFeatureNames(
     rowData(sce.mam)$Ensembl, rowData(sce.mam)$Symbol)
 
-library(AnnotationHub)
 ens.mm.v97 <- AnnotationHub()[["AH73905"]]
 rowData(sce.mam)$SEQNAME <- mapIds(ens.mm.v97, keys=rowData(sce.mam)$Ensembl,
     keytype="GENEID", column="SEQNAME")
@@ -171,24 +172,24 @@ Figure 12.2: Percentage of mitochondrial reads in each cell in the Bach mammary 
 library(scran)
 set.seed(101000110)
 clusters <- quickCluster(sce)
-sce.mam <- computeSumFactors(sce.mam, clusters=clusters)
-sce.mam <- logNormCounts(sce.mam)
+sce2 <- computeSumFactors(sce, clusters=clusters)
+sce2 <- logNormCounts(sce2)
 
 
-sce <- scuttle::logNormCounts(sce)
-logcounts(sce)
+head(logcounts(sce2))
+
 
 ```
 
 ## Feature selection.
 
-Looks like these steps are all done already even with the raw data available - subsettted to final number of gene features (n=20905).
+Looks like these steps are all done already even with the raw data available - subsetted to final number of gene features (n=20905).
 
 <br>
 
 ```{r, feat select}
 library(scran)
-dec <- modelGeneVar(sce)
+dec <- modelGeneVar(sce2)
 hvg <- getTopHVGs(dec, prop=0.1)
 ```
 
@@ -196,14 +197,15 @@ hvg <- getTopHVGs(dec, prop=0.1)
 
 ```{r, PCA}
 set.seed(1234)
-sce <- runPCA(sce, ncomponents=25, subset_row=hvg)
+sce3 <- runPCA(sce2, ncomponents=25, subset_row=hvg)
+
 ```
 
 ## Clustering.
 
 ```{r, clustering}
 library(bluster)
-colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
+colLabels(sce3) <- clusterCells(sce3, use.dimred='PCA',
                                BLUSPARAM=NNGraphParam(cluster.fun="louvain"))
 ```
 
@@ -212,25 +214,39 @@ colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
 
 Start with a UMAP.
 ```{r, UMAP}
-sce <- runUMAP(sce, dimred = 'PCA')
-plotUMAP(sce, colour_by="label")
+sce3 <- runUMAP(sce3, dimred = 'PCA')
+
+plotReducedDim(sce3, dimred="UMAP", colour_by="cell_type", text_by = "cell_type")
 ```
 
 
 Now, TSNE plot.
 
 ```{r, TSNE}
+#snn.gr <- buildSNNGraph(sce3, use.dimred="PCA", k=25)
+#colLabels(sce3) <- factor(igraph::cluster_walktrap(snn.gr)$membership)
+
+#plotTSNE(sce3, colour_by="label", text_by = "cell_type")
+
 # Run TSNE
 set.seed(00101001101)
 
 # runTSNE() stores the t-SNE coordinates in the reducedDims
 # for re-use across multiple plotReducedDim() calls.
-n_rubin2 <- runTSNE(n_rubin2, dimred="PCA")
-plotReducedDim(n_rubin2, dimred="TSNE", colour_by="cell_type", text_by = "cell_type")
+sce3 <- runTSNE(sce3, dimred="PCA")
+plotReducedDim(sce3, dimred="TSNE", colour_by="cell_type", text_by = "cell_type")
 ```
 
 
+## Reference 
+
+Ximerakis et al. (2023)
+Heterochronic parabiosis reprograms the mouse brain transcriptome by shifting aging signatures in multiple cell types. \emph{Nat Aging} 3, 327–345. DOI:https://doi.org/10.1038/s43587-023-00373-6.
+
+<br>
+
+## View Session Info
 ```{r, sesh info}
-sessioninfo()
+sessionInfo()
 ```
 
