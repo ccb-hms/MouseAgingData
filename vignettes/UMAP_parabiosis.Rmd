@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  tidy.opts = list(width.cutoff = 80), tidy = TRUE
+  tidy.opts = list(width.cutoff = 100), tidy = TRUE
 )
 ```
 
@@ -119,15 +119,11 @@ Explore and visualize mitochondrial content and read count.
 
 <br>
 
-```{r, QC check}
-library(scRNAseq)
-library(AnnotationDbi)
+```{r, QC check, eval=FALSE, include=FALSE}
 library(AnnotationHub)
+library(scRNAseq)
+sce.mam <- scRNAseq::BachMammaryData(samples="G_1")
 
-ah = AnnotationHub()
-ahs2 <- query(ah, c("Ensembl", "Mus musculus"))
-
-sce.mam <- BachMammaryData(samples="G_1")
 library(scater)
 rownames(sce.mam) <- uniquifyFeatureNames(
     rowData(sce.mam)$Ensembl, rowData(sce.mam)$Symbol)
@@ -153,15 +149,53 @@ gridExtra::grid.arrange(
         colour_by="discard") + ggtitle("Mito percent"),
     ncol=2
 )
-
 ```
 
-```{r, QC plot2}
+```{r, QC plot2, eval=F, include=FALSE}
 plotColData(unfiltered, x="sum", y="subsets_Mito_percent", 
     colour_by="discard") + scale_x_log10()
+
+#Figure 12.2: Percentage of mitochondrial reads in each cell in the Bach mammary gland dataset compared to its total count. Each point represents a cell and is colored according to whether that cell was discarded.
+
 ```
 
-Figure 12.2: Percentage of mitochondrial reads in each cell in the Bach mammary gland dataset compared to its total count. Each point represents a cell and is colored according to whether that cell was discarded.
+```{r mito plots, fig.height = 4, fig.width = 7}
+library(scRNAseq)
+sce.zeisel <- ZeiselBrainData()
+
+library(scater)
+sce.zeisel <- aggregateAcrossFeatures(sce.zeisel, 
+    id=sub("_loc[0-9]+$", "", rownames(sce.zeisel)))
+
+library(org.Mm.eg.db)
+rowData(sce.zeisel)$Ensembl <- mapIds(org.Mm.eg.db, 
+    keys=rownames(sce.zeisel), keytype="SYMBOL", column="ENSEMBL")
+
+unfiltered <- sce.zeisel
+# The original authors of the study have already removed low-quality cells prior to data publication. Nonetheless, we compute some quality control metrics to check whether the remaining cells are satisfactory.
+
+stats <- perCellQCMetrics(sce.zeisel, subsets=list(
+    Mt=rowData(sce.zeisel)$featureType=="mito"))
+qc <- quickPerCellQC(stats, percent_subsets=c("altexps_ERCC_percent", 
+    "subsets_Mt_percent"))
+sce.zeisel <- sce.zeisel[,!qc$discard]
+colData(unfiltered) <- cbind(colData(unfiltered), stats)
+unfiltered$discard <- qc$discard
+
+gridExtra::grid.arrange(
+    plotColData(unfiltered, y="sum", colour_by="discard") +
+        scale_y_log10() + ggtitle("Total count"),
+    plotColData(unfiltered, y="detected", colour_by="discard") +
+        scale_y_log10() + ggtitle("Detected features"),
+    plotColData(unfiltered, y="altexps_ERCC_percent",
+        colour_by="discard") + ggtitle("ERCC percent"),
+    plotColData(unfiltered, y="subsets_Mt_percent",
+        colour_by="discard") + ggtitle("Mito percent"),
+    ncol=2
+)
+
+```
+
 
 <br>
 
@@ -213,7 +247,7 @@ colLabels(sce3) <- clusterCells(sce3, use.dimred='PCA',
 ## Visualization.
 
 Start with a UMAP.
-```{r, UMAP}
+```{r, UMAP, fig.height = 4, fig.width = 7}
 sce3 <- runUMAP(sce3, dimred = 'PCA')
 
 plotReducedDim(sce3, dimred="UMAP", colour_by="cell_type", text_by = "cell_type")
@@ -222,7 +256,7 @@ plotReducedDim(sce3, dimred="UMAP", colour_by="cell_type", text_by = "cell_type"
 
 Now, TSNE plot.
 
-```{r, TSNE}
+```{r, TSNE, fig.height = 4, fig.width = 7}
 #snn.gr <- buildSNNGraph(sce3, use.dimred="PCA", k=25)
 #colLabels(sce3) <- factor(igraph::cluster_walktrap(snn.gr)$membership)
 
@@ -249,4 +283,3 @@ Heterochronic parabiosis reprograms the mouse brain transcriptome by shifting ag
 ```{r, sesh info}
 sessionInfo()
 ```
-
