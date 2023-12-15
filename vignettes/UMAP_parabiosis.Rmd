@@ -1,7 +1,7 @@
 ---
 title: "Quick OSCA workflow on Parabiosis Mouse Data"
 author: "Tram N. Nguyen"
-date: "11 December, 2023"
+date: "15 December, 2023"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Quick OSCA workflow on Parabiosis Mouse Data}
@@ -29,32 +29,36 @@ library(SingleCellExperiment)
 library(AnnotationHub)
 ```
 
-## Introduction
+# 1. Introduction
 
-This vignette performs a simple analysis of the Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)) 10X Genomics 
-parabiosis dataset. The analysis follows the Basics of Single-Cell Analysis in 
-the [OSCA Bioconductor book Quick Start Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple). 
-Steps in this vignette include: quality control, normalization, 
-various forms of dimensionality reduction, clustering into subpopulations, 
-detection of marker genes, and annotation of cell types. 
+This vignette performs a simple analysis of the Ximerakis et al.
+([2023](https://www.nature.com/articles/s43587-023-00373-6)) 10X Genomics
+parabiosis dataset. The analysis follows the Basics of Single-Cell Analysis in
+the [OSCA Bioconductor book Quick Start
+Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple).
+Steps in this vignette include: quality control, normalization, various forms of
+dimensionality reduction, clustering into subpopulations, detection of marker
+genes, and annotation of cell types.
 
 
-## Data Loading
+# 2. Data Loading
 
-#### Information about the dataset
-Initial dataset - 158,767 cells with data for 21,876 genes
+### About the dataset
+
 Parabiosis single cell RNA-seq (Ximerakis, Holton et al Nature Aging 2023)
 105,329 cells, 31 cell types
 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY
 20905 features
+
 Processed:
 (ALL) reduced to: OLG, OPC, GLUT, GABA, EC, ASC
 Aging OX v YX; RJV: OY v OX; AGA YO v YX
 
 <br>
 
-#### Make the SingleCellExperiment Object. 
-Load barcodes, genes, and matrix files using DropletUtils
+### Make the SingleCellExperiment Object. 
+
+Load cell barcodes, genes, and matrix files using "DropletUtils".
 
 ```{r, Data Loading}
 
@@ -112,94 +116,16 @@ head(colData(sce))
 stopifnot(identical(length(metadata$barcode), ncol(counts(sce)))) # Number of barcodes should match columns of assay
 ```
 
-## Quality control
 
-Explore and visualize mitochondrial content and read count.
-<span style="color:blue">*Note:* this is just an example from the scRNAseq package.</span>
+# 3. Quality control
 
-<br>
-
-```{r, QC check, eval=FALSE, include=FALSE}
-library(AnnotationHub)
-library(scRNAseq)
-sce.mam <- scRNAseq::BachMammaryData(samples="G_1")
-
-library(scater)
-rownames(sce.mam) <- uniquifyFeatureNames(
-    rowData(sce.mam)$Ensembl, rowData(sce.mam)$Symbol)
-
-ens.mm.v97 <- AnnotationHub()[["AH73905"]]
-rowData(sce.mam)$SEQNAME <- mapIds(ens.mm.v97, keys=rowData(sce.mam)$Ensembl,
-    keytype="GENEID", column="SEQNAME")
-
-unfiltered <- sce.mam
-is.mito <- rowData(sce.mam)$SEQNAME == "MT"
-stats <- perCellQCMetrics(sce.mam, subsets=list(Mito=which(is.mito)))
-qc <- quickPerCellQC(stats, percent_subsets="subsets_Mito_percent")
-sce.mam <- sce.mam[,!qc$discard]
-colData(unfiltered) <- cbind(colData(unfiltered), stats)
-unfiltered$discard <- qc$discard
-
-gridExtra::grid.arrange(
-    plotColData(unfiltered, y="sum", colour_by="discard") + 
-        scale_y_log10() + ggtitle("Total count"),
-    plotColData(unfiltered, y="detected", colour_by="discard") + 
-        scale_y_log10() + ggtitle("Detected features"),
-    plotColData(unfiltered, y="subsets_Mito_percent", 
-        colour_by="discard") + ggtitle("Mito percent"),
-    ncol=2
-)
-```
-
-```{r, QC plot2, eval=F, include=FALSE}
-plotColData(unfiltered, x="sum", y="subsets_Mito_percent", 
-    colour_by="discard") + scale_x_log10()
-
-#Figure 12.2: Percentage of mitochondrial reads in each cell in the Bach mammary gland dataset compared to its total count. Each point represents a cell and is colored according to whether that cell was discarded.
-
-```
-
-```{r mito plots, fig.height = 4, fig.width = 7}
-library(scRNAseq)
-sce.zeisel <- ZeiselBrainData()
-
-library(scater)
-sce.zeisel <- aggregateAcrossFeatures(sce.zeisel, 
-    id=sub("_loc[0-9]+$", "", rownames(sce.zeisel)))
-
-library(org.Mm.eg.db)
-rowData(sce.zeisel)$Ensembl <- mapIds(org.Mm.eg.db, 
-    keys=rownames(sce.zeisel), keytype="SYMBOL", column="ENSEMBL")
-
-unfiltered <- sce.zeisel
-# The original authors of the study have already removed low-quality cells prior to data publication. Nonetheless, we compute some quality control metrics to check whether the remaining cells are satisfactory.
-
-stats <- perCellQCMetrics(sce.zeisel, subsets=list(
-    Mt=rowData(sce.zeisel)$featureType=="mito"))
-qc <- quickPerCellQC(stats, percent_subsets=c("altexps_ERCC_percent", 
-    "subsets_Mt_percent"))
-sce.zeisel <- sce.zeisel[,!qc$discard]
-colData(unfiltered) <- cbind(colData(unfiltered), stats)
-unfiltered$discard <- qc$discard
-
-gridExtra::grid.arrange(
-    plotColData(unfiltered, y="sum", colour_by="discard") +
-        scale_y_log10() + ggtitle("Total count"),
-    plotColData(unfiltered, y="detected", colour_by="discard") +
-        scale_y_log10() + ggtitle("Detected features"),
-    plotColData(unfiltered, y="altexps_ERCC_percent",
-        colour_by="discard") + ggtitle("ERCC percent"),
-    plotColData(unfiltered, y="subsets_Mt_percent",
-        colour_by="discard") + ggtitle("Mito percent"),
-    ncol=2
-)
-
-```
+Explore and visualize mitochondrial content and read count. Note: the authors have already removed low-quality cells and animals so we will skip this section in this vignette. For more details on their workflow, one can refer to the original article Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)). The OSCA workbook [OSCA Bioconductor book Quick Start
+Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple) provides several examples of quality control steps as well. 
 
 
 <br>
 
-## Normalization
+# 4. Normalization
 
 ```{r, normalize}
 
@@ -215,7 +141,7 @@ head(logcounts(sce2))
 
 ```
 
-## Feature selection.
+# 5. Feature selection.
 
 Looks like these steps are all done already even with the raw data available - subsetted to final number of gene features (n=20905).
 
@@ -227,15 +153,19 @@ dec <- modelGeneVar(sce2)
 hvg <- getTopHVGs(dec, prop=0.1)
 ```
 
-## PCA.
+# 6. PCA.
 
-```{r, PCA}
+```{r, PCA, warning=F}
 set.seed(1234)
+<<<<<<< HEAD
+sce <- runPCA(sce, ncomponents=25, subset_row=hvg) # Add PCA coords to sce object
+=======
 sce3 <- runPCA(sce2, ncomponents=25, subset_row=hvg)
 
+>>>>>>> parent of 9d1d2a3 (added sce rds)
 ```
 
-## Clustering.
+# 7. Clustering.
 
 ```{r, clustering}
 library(bluster)
@@ -244,13 +174,81 @@ colLabels(sce3) <- clusterCells(sce3, use.dimred='PCA',
 ```
 
 
-## Visualization.
+# 8. Visualization.
+
+
+
+<<<<<<< HEAD
+# Generate color map matching cell type to colors in publication
+color.map.list_All_Lin=c(
+  #"OPC","OLG","OEG",
+  "olivedrab4", "olivedrab3", "olivedrab1",
+  #"NSC","ARP","ASC",
+  "royalblue4", "steelblue4", "steelblue1",
+  #"EPC","HypEPC,"TNC","CPC",
+  "lightgoldenrod4", "lightgoldenrod3", "lightgoldenrod2","gold",
+  #,"NRP","ImmN","GABA", DOPA", "GLUT","CHOL","NendC"
+  "darkmagenta", "purple3","mediumorchid3", "violetred3", "palevioletred", "violet","lightpink",
+  #,"EC","PC","VSMC","Hb-VC","VLMC","ABC",
+  "sienna4", "sienna3", "sienna1", "peru","peachpuff4","peachpuff3",
+  #"MG","MAC","MNC","DC","NEUT","T_cell","NK", "B_Cell"
+  "red4","red3","tomato3", "red1","tomato1","salmon3", "indianred2", "coral")
+
+names(color.map.list_All_Lin)<-c("OPC","OLG","OEG",
+                                  "NSC","ARP","ASC",
+                                  "EPC", "HypEPC", "TNC", "CPC",
+                                  "NRP","ImmN","GABA", "DOPA", "GLUT","CHOL","NendC",
+                                  "EC","PC","VSMC","Hb_VC","VLMC","ABC",
+                                  "MG","MAC","MNC","DC","NEUT","T_cell","NK", "B_cell")
+
+
+gg <- plotUMAP(sce, color_by = "cell_type", text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map.list_All_Lin))
+
+# remove ori.gent, sample_order
+# animal_name switch name to "parabiosis category" to describe the treatment pairing
+# change period to underscores - consistent.
+
+TSNE2 <- reducedDim(sce, "TSNE")
+reducedDim(sce, "TSNE2") <- TSNE2 # Add another component to redcuedDims
+# reorder the list
+reducedDims(sce) <- reducedDims(sce)[c("TSNE", "TSNE2", "UMAP")] # Can do this with assays as well.
+
+# remove rowData gene names
+```
+
+This plot is a recreation of Fig. 2C from Ximerakis et al. 2023.
+
+
+```{r, plot provided TSNE, fig.height = 4, fig.width = 6.5}
+
+gg <- plotTSNE(sce, color_by = "cell_type", text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map.list_All_Lin))
+=======
+>>>>>>> parent of 9d1d2a3 (added sce rds)
+```
+
+
+
 
 Start with a UMAP.
 ```{r, UMAP, fig.height = 4, fig.width = 7}
 sce3 <- runUMAP(sce3, dimred = 'PCA')
 
+<<<<<<< HEAD
+```{r, UMAP, fig.height = 4, fig.width = 6.5}
+
+OSCA_UMAP <- runUMAP(sce, dimred = 'PCA')
+reducedDims(sce_test) <- c(reducedDims(sce), list(OSCA_UMAP=OSCA_UMAP))
+
+
+# When we want to access a specific item (here, "UMAP2") in the reducedDims element of the SingleCellExperiment object, we can use the function plotReducedDim with the argument dimred.
+
+gg <- plotReducedDim(sce, dimred = "OSCA_UMAP", color_by = "cell_type", text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map.list_All_Lin))
+=======
 plotReducedDim(sce3, dimred="UMAP", colour_by="cell_type", text_by = "cell_type")
+>>>>>>> parent of 9d1d2a3 (added sce rds)
 ```
 
 
