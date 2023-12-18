@@ -119,7 +119,9 @@ stopifnot(identical(length(metadata$barcode), ncol(counts(sce)))) # Number of ba
 
 # 3. Quality control
 
-Explore and visualize mitochondrial content and read count. Note: the authors have already removed low-quality cells and animals so we will skip this section in this vignette. For more details on their workflow, one can refer to the original article Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)). The OSCA workbook [OSCA Bioconductor book Quick Start
+Explore and visualize mitochondrial content and read count.
+
+Note: the authors have already removed low-quality cells and animals so we will skip this section in this vignette. For more details on their workflow, one can refer to the original article Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)). The OSCA workbook [OSCA Bioconductor book Quick Start
 Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple) provides several examples of quality control steps as well. 
 
 
@@ -157,28 +159,23 @@ hvg <- getTopHVGs(dec, prop=0.1)
 
 ```{r, PCA, warning=F}
 set.seed(1234)
-<<<<<<< HEAD
 sce <- runPCA(sce, ncomponents=25, subset_row=hvg) # Add PCA coords to sce object
-=======
-sce3 <- runPCA(sce2, ncomponents=25, subset_row=hvg)
-
->>>>>>> parent of 9d1d2a3 (added sce rds)
 ```
 
 # 7. Clustering.
 
 ```{r, clustering}
 library(bluster)
-colLabels(sce3) <- clusterCells(sce3, use.dimred='PCA',
+colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
                                BLUSPARAM=NNGraphParam(cluster.fun="louvain"))
 ```
 
 
 # 8. Visualization.
 
+For this dataset, the authors have already provided us with their exact UMAP and TSNE coordinates, as well as their color scheme representing the cell types from their paper. This can be accessed with the `colDat` function.
 
-
-<<<<<<< HEAD
+```{r}
 # Generate color map matching cell type to colors in publication
 color.map.list_All_Lin=c(
   #"OPC","OLG","OEG",
