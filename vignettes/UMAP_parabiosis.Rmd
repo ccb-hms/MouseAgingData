@@ -134,11 +134,11 @@ Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#
 library(scran)
 set.seed(101000110)
 clusters <- quickCluster(sce)
-sce2 <- computeSumFactors(sce, clusters=clusters)
-sce2 <- logNormCounts(sce2)
+sce <- computeSumFactors(sce, clusters=clusters)
+sce <- logNormCounts(sce)
 
 
-head(logcounts(sce2))
+head(logcounts(sce))
 
 
 ```
@@ -151,7 +151,7 @@ Looks like these steps are all done already even with the raw data available - s
 
 ```{r, feat select}
 library(scran)
-dec <- modelGeneVar(sce2)
+dec <- modelGeneVar(sce)
 hvg <- getTopHVGs(dec, prop=0.1)
 ```
 
@@ -177,30 +177,40 @@ For this dataset, the authors have already provided us with their exact UMAP and
 
 ```{r}
 # Generate color map matching cell type to colors in publication
-color.map.list_All_Lin=c(
-  #"OPC","OLG","OEG",
-  "olivedrab4", "olivedrab3", "olivedrab1",
-  #"NSC","ARP","ASC",
-  "royalblue4", "steelblue4", "steelblue1",
-  #"EPC","HypEPC,"TNC","CPC",
-  "lightgoldenrod4", "lightgoldenrod3", "lightgoldenrod2","gold",
-  #,"NRP","ImmN","GABA", DOPA", "GLUT","CHOL","NendC"
-  "darkmagenta", "purple3","mediumorchid3", "violetred3", "palevioletred", "violet","lightpink",
-  #,"EC","PC","VSMC","Hb-VC","VLMC","ABC",
-  "sienna4", "sienna3", "sienna1", "peru","peachpuff4","peachpuff3",
-  #"MG","MAC","MNC","DC","NEUT","T_cell","NK", "B_Cell"
-  "red4","red3","tomato3", "red1","tomato1","salmon3", "indianred2", "coral")
+cell.color <- metadata(sce)$cell_color
 
-names(color.map.list_All_Lin)<-c("OPC","OLG","OEG",
-                                  "NSC","ARP","ASC",
-                                  "EPC", "HypEPC", "TNC", "CPC",
-                                  "NRP","ImmN","GABA", "DOPA", "GLUT","CHOL","NendC",
-                                  "EC","PC","VSMC","Hb_VC","VLMC","ABC",
-                                  "MG","MAC","MNC","DC","NEUT","T_cell","NK", "B_cell")
-
-
+library(scater)
 gg <- plotUMAP(sce, color_by = "cell_type", text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
+```
+This plot is a recreation of Fig. 2C from Ximerakis et al. 2023.
+
+<br>
+
+We can also plot a TSNE with their provided coordinates.
+
+```{r, plot provided TSNE, fig.height = 4, fig.width = 6.5}
+gg <- plotTSNE(sce, color_by = "cell_type", text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
+```
+
+<br>
+
+We can also create our own UMAP and TSNE plots following the OSCA workflow and save our own coordinates to the `SingleCellExperiment` object. 
+
+
+Start with a UMAP.
+```{r, UMAP, fig.height = 4, fig.width = 7}
+# Add our UMAP to the reducedDims slot
+umap2 <- runUMAP(sce, dimred = 'PCA')
+reducedDims(sce, "osca_UMAP") <- runUMAP(sce, dimred = 'PCA')
+
+# When we want to access a specific item (here, "osca_UMAP") in the reducedDims element of the SingleCellExperiment object, we can use the function plotReducedDim with the argument dimred.
+
+gg <- plotReducedDim(sce, dimred = "OSCA_UMAP", color_by = "cell_type", text_by = "cell_type") 
 gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map.list_All_Lin))
+```
+
 
 
 TSNE2 <- reducedDim(sce, "TSNE")
@@ -210,39 +220,14 @@ reducedDims(sce) <- reducedDims(sce)[c("TSNE", "TSNE2", "UMAP")] # Can do this w
 
 ```
 
-This plot is a recreation of Fig. 2C from Ximerakis et al. 2023.
-
-
-```{r, plot provided TSNE, fig.height = 4, fig.width = 6.5}
-
-gg <- plotTSNE(sce, color_by = "cell_type", text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map.list_All_Lin))
-=======
->>>>>>> parent of 9d1d2a3 (added sce rds)
-```
 
 
 
 
-Start with a UMAP.
-```{r, UMAP, fig.height = 4, fig.width = 7}
-sce3 <- runUMAP(sce3, dimred = 'PCA')
-
-<<<<<<< HEAD
-```{r, UMAP, fig.height = 4, fig.width = 6.5}
-
-OSCA_UMAP <- runUMAP(sce, dimred = 'PCA')
-reducedDims(sce_test) <- c(reducedDims(sce), list(OSCA_UMAP=OSCA_UMAP))
 
 
-# When we want to access a specific item (here, "UMAP2") in the reducedDims element of the SingleCellExperiment object, we can use the function plotReducedDim with the argument dimred.
 
-gg <- plotReducedDim(sce, dimred = "OSCA_UMAP", color_by = "cell_type", text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map.list_All_Lin))
-=======
-plotReducedDim(sce3, dimred="UMAP", colour_by="cell_type", text_by = "cell_type")
->>>>>>> parent of 9d1d2a3 (added sce rds)
-```
+
 
 
 Now, TSNE plot.
