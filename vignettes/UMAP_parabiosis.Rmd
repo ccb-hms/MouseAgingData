@@ -202,16 +202,12 @@ names(color.map.list_All_Lin)<-c("OPC","OLG","OEG",
 gg <- plotUMAP(sce, color_by = "cell_type", text_by = "cell_type") 
 gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map.list_All_Lin))
 
-# remove ori.gent, sample_order
-# animal_name switch name to "parabiosis category" to describe the treatment pairing
-# change period to underscores - consistent.
 
 TSNE2 <- reducedDim(sce, "TSNE")
 reducedDim(sce, "TSNE2") <- TSNE2 # Add another component to reducedDims
 # reorder the list
 reducedDims(sce) <- reducedDims(sce)[c("TSNE", "TSNE2", "UMAP")] # Can do this with assays as well.
 
-# remove rowData gene names
 ```
 
 This plot is a recreation of Fig. 2C from Ximerakis et al. 2023.

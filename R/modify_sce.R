@@ -12,6 +12,10 @@ names(colData(sce))[which(names(colData(sce)) =="percent.ribo")] <- "percent_rib
 
 counts(sce)
 rowData(sce) <- NULL # Remove gene ID from rowData
+
+# remove current metadata and add cell colors from Kris
+metadata(sce)$Samples <- NULL
+metadata(sce)$cell_colors <- color.map.list_All_Lin
 sce
 
 saveRDS(sce, "../parabiosis_sce.rds")
