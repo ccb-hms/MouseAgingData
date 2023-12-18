@@ -173,7 +173,7 @@ colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
 
 # 8. Visualization.
 
-For this dataset, the authors have already provided us with their exact UMAP and TSNE coordinates, as well as their color scheme representing the cell types from their paper. This can be accessed with the `colDat` function.
+For this dataset, the authors have already provided us with their exact UMAP and TSNE coordinates, as well as their color scheme representing the cell types from their paper. This can be accessed in the metadata slot of the `SingleCellExperiment` object with the `colData` function.
 
 ```{r}
 # Generate color map matching cell type to colors in publication
@@ -207,7 +207,7 @@ gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map
 # change period to underscores - consistent.
 
 TSNE2 <- reducedDim(sce, "TSNE")
-reducedDim(sce, "TSNE2") <- TSNE2 # Add another component to redcuedDims
+reducedDim(sce, "TSNE2") <- TSNE2 # Add another component to reducedDims
 # reorder the list
 reducedDims(sce) <- reducedDims(sce)[c("TSNE", "TSNE2", "UMAP")] # Can do this with assays as well.
 
