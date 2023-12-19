@@ -158,6 +158,7 @@ hvg <- getTopHVGs(dec, prop=0.1)
 # 6. PCA.
 
 ```{r, PCA, warning=F}
+library(scater)
 set.seed(1234)
 sce <- runPCA(sce, ncomponents=25, subset_row=hvg) # Add PCA coords to sce object
 ```
@@ -201,50 +202,25 @@ We can also create our own UMAP and TSNE plots following the OSCA workflow and s
 
 Start with a UMAP.
 ```{r, UMAP, fig.height = 4, fig.width = 7}
-# Add our UMAP to the reducedDims slot
-umap2 <- runUMAP(sce, dimred = 'PCA')
-reducedDims(sce, "osca_UMAP") <- runUMAP(sce, dimred = 'PCA')
+# Add our UMAP to the reducedDims slot with the name "osca_UMAP" so we do not confused it with the author's UMAP coords.
+sce <- runUMAP(sce, dimred = 'PCA', name = "osca_UMAP")
 
 # When we want to access a specific item (here, "osca_UMAP") in the reducedDims element of the SingleCellExperiment object, we can use the function plotReducedDim with the argument dimred.
 
-gg <- plotReducedDim(sce, dimred = "OSCA_UMAP", color_by = "cell_type", text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(color.map.list_All_Lin))
+gg <- plotReducedDim(sce, dimred = "osca_UMAP", color_by = "cell_type", text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
 ```
 
-
-
-TSNE2 <- reducedDim(sce, "TSNE")
-reducedDim(sce, "TSNE2") <- TSNE2 # Add another component to reducedDims
-# reorder the list
-reducedDims(sce) <- reducedDims(sce)[c("TSNE", "TSNE2", "UMAP")] # Can do this with assays as well.
-
-```
-
-
-
-
-
-
-
-
-
-
-
-Now, TSNE plot.
-
-```{r, TSNE, fig.height = 4, fig.width = 7}
-#snn.gr <- buildSNNGraph(sce3, use.dimred="PCA", k=25)
-#colLabels(sce3) <- factor(igraph::cluster_walktrap(snn.gr)$membership)
-
-#plotTSNE(sce3, colour_by="label", text_by = "cell_type")
-
+Now with a TSNE.
+```{r, TSNE2, fig.height = 4, fig.width = 7}
 # Run TSNE
 set.seed(00101001101)
 
 # runTSNE() stores the t-SNE coordinates in the reducedDims
-# for re-use across multiple plotReducedDim() calls.
-sce3 <- runTSNE(sce3, dimred="PCA")
-plotReducedDim(sce3, dimred="TSNE", colour_by="cell_type", text_by = "cell_type")
+sce <- runTSNE(sce, dimred = 'PCA', name = "osca_TSNE")
+
+gg <- plotReducedDim(sce, dimred = "osca_TSNE", color_by = "cell_type", text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
 ```
 
 
