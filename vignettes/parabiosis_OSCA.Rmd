@@ -1,7 +1,7 @@
 ---
 title: "Quick OSCA workflow on Parabiosis Mouse Data"
 author: "Tram N. Nguyen"
-date: "15 December, 2023"
+date: "19 December, 2023"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Quick OSCA workflow on Parabiosis Mouse Data}
