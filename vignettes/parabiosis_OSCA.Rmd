@@ -18,7 +18,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, setup, message=FALSE}
-library(MouseAgingData)
 library(devtools)
 library(DropletUtils)
 library(edgeR)
@@ -29,7 +28,7 @@ library(SingleCellExperiment)
 library(AnnotationHub)
 ```
 
-# 1. Introduction
+## 1. Introduction
 
 This vignette performs a simple analysis of the Ximerakis et al.
 ([2023](https://www.nature.com/articles/s43587-023-00373-6)) 10X Genomics
@@ -41,7 +40,7 @@ dimensionality reduction, clustering into subpopulations, detection of marker
 genes, and annotation of cell types.
 
 
-# 2. Data Loading
+## 2. Data Loading
 
 ### About the dataset
 
@@ -56,81 +55,46 @@ Aging OX v YX; RJV: OY v OX; AGA YO v YX
 
 <br>
 
-### Make the SingleCellExperiment Object. 
+### Make the `SingleCellExperiment` object. 
 
 Load cell barcodes, genes, and matrix files using "DropletUtils".
 
 ```{r, Data Loading}
-
 library(MouseAgingData)
 
 # getWebData(format = "tsv", destination = "~/Desktop/", url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE222nnn/GSE222510/suppl/GSE222510_processed_barcodes.tsv.gz", header=F)
 
-# Eventually we can load in data through our package
-
-filepath = "~/Documents/Rubin Mouse Aging/data/parabiosis/"
-
-# load in components
-barcodes <- read.table(paste0(filepath, "raw_files/10X/barcodes.tsv"), header = FALSE, stringsAsFactors = FALSE)
-genes <- read.table(paste0(filepath,"raw_files/10X/genes.tsv"), header = FALSE, stringsAsFactors = FALSE)
-metadata <- read.table(paste0(filepath, "raw_files/filtered.metadata.txt"), header = TRUE, sep = "") #105329 2
-
-# Put all together in SCE
-sce <- read10xCounts(paste0(filepath,"raw_files/10X/"), col.names = FALSE)
+# Eventually we can load in data through our package, for now:
+sce <- readRDS("~/Desktop/parabiosis_sce.rds")
 sce
 ```
 
-Do some quick QC to make sure the data loaded in correctly, and is what we expected.
+Do some quick QC to make sure the data loaded correctly and is what we expected.
 
 ```{r, Data check}
-colData(sce) # Sample metadata - just the cell barcodes
-
-rowData(sce) # DataFrame with 20905 genes ID -- matches the features in their paper
-
+# Check sce dimensions
 dim(sce)
 
-head(counts(sce)) # The count matrix. Transcript for each gene per cell (column) -- NOT NORMALIZED
+# Sample metadata
+head(colData(sce)) 
 
-# Grab the animal columns to investigate
-df = cbind(metadata$animal, metadata$animal_name)
-df = as.data.frame(unique(df))
-table(df$V2)
+# Includes cell colors from the original paper
+metadata(sce)
+
+# The count matrix. Transcript for each gene per cell (column)
+head(counts(sce)) 
 ```
 
 
-#### Add the metadata to the sce object
-We can add metadata to describe the columns of our primary data, e.g., the samples or cells of our experiment. This is stored in the colData slot, a DataFrame object where rows correspond to cells and columns correspond to metadata fields, e.g., batch of origin, treatment condition
+## 3. Quality control
 
-```{r, add metadata}
-dim(metadata) # Info for each cell (row n=10k). In the counts assay cells are columns.
-SummarizedExperiment::colData(sce) <- DataFrame(metadata)
-```
-
-View our new `SingleCellExperiment` object. We see there are 12 ColData names now.
-
-```{r, add metadata cont}
-sce
-head(colData(sce))
-
-# check that rows and columns are the same number of cells
-stopifnot(identical(length(metadata$barcode), ncol(counts(sce)))) # Number of barcodes should match columns of assay
-```
+In this step, we can explore and visualize mitochondrial content and read count. However, the authors have already removed low-quality cells and animals so we will skip this section in this vignette. For more details on their workflow, one can refer to the original article Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)). The [OSCA Bioconductor book ](https://bioconductor.org/books/3.15/OSCA.basic/quality-control.html) also provides several examples of quality control steps as well. 
 
 
-# 3. Quality control
 
-Explore and visualize mitochondrial content and read count.
-
-Note: the authors have already removed low-quality cells and animals so we will skip this section in this vignette. For more details on their workflow, one can refer to the original article Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)). The OSCA workbook [OSCA Bioconductor book Quick Start
-Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple) provides several examples of quality control steps as well. 
-
-
-<br>
-
-# 4. Normalization
+## 4. Normalization
 
 ```{r, normalize}
-
 library(scran)
 set.seed(101000110)
 clusters <- quickCluster(sce)
@@ -139,15 +103,12 @@ sce <- logNormCounts(sce)
 
 
 head(logcounts(sce))
-
-
 ```
 
-# 5. Feature selection.
+## 5. Feature selection
 
-Looks like these steps are all done already even with the raw data available - subsetted to final number of gene features (n=20905).
+Select an appropriate set of highly variable genes (HVGs).
 
-<br>
 
 ```{r, feat select}
 library(scran)
@@ -155,7 +116,8 @@ dec <- modelGeneVar(sce)
 hvg <- getTopHVGs(dec, prop=0.1)
 ```
 
-# 6. PCA.
+
+## 6. PCA
 
 ```{r, PCA, warning=F}
 library(scater)
@@ -163,7 +125,8 @@ set.seed(1234)
 sce <- runPCA(sce, ncomponents=25, subset_row=hvg) # Add PCA coords to sce object
 ```
 
-# 7. Clustering.
+
+## 7. Clustering
 
 ```{r, clustering}
 library(bluster)
@@ -172,11 +135,11 @@ colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
 ```
 
 
-# 8. Visualization.
+## 8. Visualization
 
-For this dataset, the authors have already provided us with their exact UMAP and TSNE coordinates, as well as their color scheme representing the cell types from their paper. This can be accessed in the metadata slot of the `SingleCellExperiment` object with the `colData` function.
+For this dataset, the authors have already provided us with their exact UMAP and TSNE coordinates, as well as their color scheme representing the cell types from their paper. This can be accessed in the metadata slot of the `SingleCellExperiment` object with the `metadata()` function.
 
-```{r}
+```{r provided umap, fig.height = 4, fig.width = 6.5}
 # Generate color map matching cell type to colors in publication
 cell.color <- metadata(sce)$cell_color
 
@@ -184,9 +147,9 @@ library(scater)
 gg <- plotUMAP(sce, color_by = "cell_type", text_by = "cell_type") 
 gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
 ```
+
 This plot is a recreation of Fig. 2C from Ximerakis et al. 2023.
 
-<br>
 
 We can also plot a TSNE with their provided coordinates.
 
@@ -201,7 +164,7 @@ We can also create our own UMAP and TSNE plots following the OSCA workflow and s
 
 
 Start with a UMAP.
-```{r, UMAP, fig.height = 4, fig.width = 7}
+```{r, UMAP2, fig.height = 4, fig.width = 6.5}
 # Add our UMAP to the reducedDims slot with the name "osca_UMAP" so we do not confused it with the author's UMAP coords.
 sce <- runUMAP(sce, dimred = 'PCA', name = "osca_UMAP")
 
@@ -212,7 +175,7 @@ gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.colo
 ```
 
 Now with a TSNE.
-```{r, TSNE2, fig.height = 4, fig.width = 7}
+```{r, TSNE2, fig.height = 4, fig.width = 6.5}
 # Run TSNE
 set.seed(00101001101)
 
@@ -229,7 +192,7 @@ gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.colo
 Ximerakis et al. (2023)
 Heterochronic parabiosis reprograms the mouse brain transcriptome by shifting aging signatures in multiple cell types. \emph{Nat Aging} 3, 327–345. DOI:https://doi.org/10.1038/s43587-023-00373-6.
 
-<br>
+
 
 ## View Session Info
 ```{r, sesh info}
