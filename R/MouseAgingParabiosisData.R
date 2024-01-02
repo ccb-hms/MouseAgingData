@@ -17,11 +17,10 @@
 #'
 #' @details
 #' This function downloads the data for the mouse aging parabiosis study from Ximerakis et al ([2023](https://www.nature.com/articles/s43587-023-00373-6)).
-#' The raw dataset contains 158,767 cells with data for 21,876 features outputted from CellRanger for a total of 55 animals.
+#'
 #' The processed dataset contains 105,329 cells and 20905 features for 31 cell types. Low quality cells and animals were removed following Ximerakis et al. (2023) resulting in 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY animals.
+#' The row metadata contains MGI symbol for each gene.
 #'
-#'
-#' For both raw and processed data, the row metadata contains the Ensembl ID and MGI symbol for each gene. # Check this
 #'
 #'
 #' A reminder of the heterochronic groups included in this study is available below:

@@ -26,6 +26,8 @@ A data frame or matrix.
 Get data from web repository via a URL link
 }
 \examples{
-test <- getWebData(format = "tsv", destination = "~/Desktop/", url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE222nnn/GSE222510/suppl/GSE222510_processed_barcodes.tsv.gz", header=F)
+test <- getWebData(format = "tsv", destination = "~/Desktop/",
+url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE222nnn/GSE222510/suppl/GSE222510_processed_barcodes.tsv.gz",
+header=F)
 head(test)
 }
