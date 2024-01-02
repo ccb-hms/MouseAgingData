@@ -43,7 +43,7 @@ example, for the 10x data:
 ```{r}
 droplet <- eh[["EH1617"]]
 droplet
-droplet <- TabulaMurisDroplet()
+droplet <- parabiosis10X()
 droplet
 ```
 

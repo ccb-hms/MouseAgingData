@@ -55,7 +55,12 @@
 #' @importFrom methods as
 parabiosis10X <- function (metadata = FALSE)
 {
-  eh <- .get_ExperimentHub()
+  hub <- ExperimentHub::ExperimentHub()
+  title <- "parabiosis10X"
+
+  eh <- .get_ExperimentHub(hub, title)
+  ehid <- eh$ah_id
+
   if (metadata) {
     eh[ehid]
   }
