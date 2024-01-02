@@ -1,0 +1,56 @@
+---
+title: "MouseAgingData Intro"
+author: "Tram N Nguyen"
+package: MouseAgingData
+output: 
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{MouseAgingData Intro}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+# Load Mouse Aging Data
+
+The `TabulaMurisData` data package provides access to the 10x and SmartSeq2
+single-cell RNA-seq data sets from 
+[the Tabula Muris Consortium](http://tabula-muris.ds.czbiohub.org/). 
+The contents of the package can be seen by querying the ExperimentHub for the
+package name.
+
+```{r}
+suppressPackageStartupMessages({
+    library(ExperimentHub)
+    library(SingleCellExperiment)
+    library(MouseAgingData)
+})
+
+eh <- ExperimentHub()
+query(eh, "MouseAgingData")
+```
+
+The individual data sets can be accessed using either their ExperimentHub
+accession number, or the convenience functions provided in this package. For
+example, for the 10x data:
+
+```{r}
+droplet <- eh[["EH1617"]]
+droplet
+droplet <- TabulaMurisDroplet()
+droplet
+```
+
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
