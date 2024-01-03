@@ -1,6 +1,6 @@
 Package: MouseAgingData
 Title: Multi-omics Data Across Several Mouse Aging Projects from Rubin Lab
-Version: 0.99.4
+Version: 0.99.5
 Authors@R: 
     person("Tram", "Nguyen", , "Tram_Nguyen@hms.harvard.edu", 
     role = c("aut", "cre"))
