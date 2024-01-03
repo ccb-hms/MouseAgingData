@@ -1,5 +1,5 @@
 ---
-title: "Preparing the Parabiosis 10X droplet dataset for _ExperimentHub_"
+title: "Preparing the Parabiosis 10X droplet dataset for ExperimentHub"
 author: "Tram Nguyen"
 date: "`r Sys.Date()`"
 output: html_document
@@ -7,24 +7,104 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(width = 100)
 ```
 
-## R Markdown
+## Data pre-processing
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Basic processing using the R package Seurat has already been performed on this data to remove low-quality cells and animals following the methods described in Ximerakis et al. 2023. Briefly, the initial dataset contained 158,767 cells with data for 21,876 genes. The data were log-normalized and scaled to 10,000 transcripts per cell. This was used to create a UMAP using the first 50 PCs from a Principal Components Analysis to find cell clusters with the function `FindClusters()`. All clusters with only one cell, \>8% mitochondrial genes, or minimum number of RNA transcripts counts \< 1,000 were removed. Animals with number of genes \< 700, percent mitochondrial \> 1.5 and not having any cell contribution to each clusters were identified for exclusion.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+The second round of quality control (QC) filtering removed clusters with minimum percentage mitochondria 0, maximum percentage mitochondria 5%, min_nFeature_RNA 250, max_nFeature_RNA 6000, min_nCount_RNA 200, max_nCount_RNA 30000, min_cells=5. After this second round of QC, the final dataset retained 130,889 cells and 20,905 genes.
 
-```{r cars}
-summary(cars)
+Finally, probable doublet artifacts were removed. Doublets/multiplets were marked as any cluster in which \>40% of its cells express seven of the top ten genes specific to an initially identified cell type and any other outside of the class of the cell type with which it is associated.
+
+The final processed dataset includes 105,329 cells and 20,905 genes which can be downloaded from GEO.
+
+## Download processed data
+
+The [un-normalized count table](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fmatrix%2Emtx%2Egz), [cell barcodes](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fbarcodes%2Etsv%2Egz), [gene symbols](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fgenes%2Etsv%2Egz), and [metadata](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Ffiltered%5Fmetadata%2Etxt%2Egz) were all downloaded from GEO [accession number GSE222510](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE222510) (accessed January 3, 2024).
+
+The data can be downloaded with the helper function `getWebData.R` provided by the MouseAgingData package.
+
+UMAP and TSNE coordinates were provided courtesy of the authors Ximerakis et al. 2023
+
+## Generate `SingleCellExperiment` object
+
+```{r}
+suppressPackageStartupMessages({
+  library(Matrix)
+  library(SingleCellExperiment)
+  library(DropletUtils)
+  library(readr)
+  library(dplyr)
+})
+
+barcodes <- read.table("barcodes.tsv", header = FALSE, stringsAsFactors = FALSE)
+genes <- read.table("genes.tsv", header = FALSE, stringsAsFactors = FALSE)
+metadata <- read.table("filtered.metadata.txt", header = TRUE, sep = "")
+
+# Put all file into one directory called raw_files/10X/ and read them in with DropletUtils
+sce <- read10xCounts("raw_files/10X/", col.names = FALSE)
+
+stopifnot(all(rownames(counts(sce)) == genes))
+
+dim(sce) # 20905 105329
+
+# Manipulate the metadata and rownames to remove duplicate, irrelevant info
+colnames(sce) <- NULL # Remove barcodes in the colnames
+colData(sce)$orig.ident <- NULL
+colData(sce)$sample_order <- NULL
+
+# Rename column names of metadata
+names(colData(sce))[which(names(colData(sce)) =="animal_name")] <- "parabiosis_category"
+names(colData(sce))[which(names(colData(sce)) =="percent.mito")] <- "percent_mito"
+names(colData(sce))[which(names(colData(sce)) =="percent.ribo")] <- "percent_ribo"
+names(colData(sce))[which(names(colData(sce)) =="percent.ribo")] <- "percent_ribo"
+
+counts(sce)
+rowData(sce) <- NULL # Remove gene ID from rowData
+
+# remove current metadata and add cell colors matching Ximerakis et al. 2023
+
+color.map.list_All_Lin=c(
+  #"OPC","OLG","OEG",
+  "olivedrab4", "olivedrab3", "olivedrab1",
+  #"NSC","ARP","ASC",
+  "royalblue4", "steelblue4", "steelblue1",
+  #"EPC","HypEPC,"TNC","CPC",
+  "lightgoldenrod4", "lightgoldenrod3", "lightgoldenrod2","gold",
+  #,"NRP","ImmN","GABA", DOPA", "GLUT","CHOL","NendC"
+  "darkmagenta", "purple3","mediumorchid3", "violetred3", "palevioletred", "violet","lightpink",
+  #,"EC","PC","VSMC","Hb-VC","VLMC","ABC",
+  "sienna4", "sienna3", "sienna1", "peru","peachpuff4","peachpuff3",
+  #"MG","MAC","MNC","DC","NEUT","T_cell","NK", "B_Cell"
+  "red4","red3","tomato3", "red1","tomato1","salmon3", "indianred2", "coral")
+
+names(color.map.list_All_Lin)<-c("OPC","OLG","OEG",
+                                 "NSC","ARP","ASC",
+                                 "EPC", "HypEPC", "TNC", "CPC",
+                                 "NRP","ImmN","GABA", "DOPA", "GLUT","CHOL","NendC",
+                                 "EC","PC","VSMC","Hb_VC","VLMC","ABC",
+                                 "MG","MAC","MNC","DC","NEUT","T_cell","NK", "B_cell")
+
+
+metadata(sce)$Samples <- NULL
+metadata(sce)$cell_colors <- color.map.list_All_Lin # All cell colors into metadata slot
+sce
 ```
 
-## Including Plots
+## Save `SingleCellExperiment` object
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+saveRDS(sce, "parabiosis_sce.rds")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## References
+
+Ximerakis et al. (2023) Heterochronic parabiosis reprograms the mouse brain transcriptome by shifting aging signatures in multiple cell types. *Nat Aging* 3, 327--345. [DOI:https://doi.org/10.1038/s43587-023-00373-6](DOI:https://doi.org/10.1038/s43587-023-00373-6){.uri}.
+
+## Session info
+
+```{r}
+sessionInfo()
+```
