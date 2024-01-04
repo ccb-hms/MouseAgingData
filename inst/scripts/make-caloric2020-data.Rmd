@@ -1,5 +1,5 @@
 ---
-title: "Preparing the caloric restriction 2019 dataset for ExperimentHub"
+title: "Preparing the caloric restriction 2020 dataset for ExperimentHub"
 author: "Tram Nguyen"
 date: "`r Sys.Date()`"
 output: html_document
@@ -11,6 +11,61 @@ options(width = 100)
 ```
 
 ## Data pre-processing
+
+# Make `SingleCellExperiment` data with all tissues combined
+
+```{r}
+# Load in all samples
+file_list <- list.files(mydir, full.names = TRUE)
+
+# Filter files containing the pattern "all_rawcounts"
+tissue <- "all_rawcounts"
+tissue_file <- subset(file_list, grepl(tissue, file_list))
+
+
+# Get sample names from files
+mytitles <- basename(tissue_file) # get just the file's name
+names <- sub("_all_rawcounts.[a-z]*.[a-z]*.gz", "", mytitles) # Grab only Sample name and tissue
+names
+
+# Read in the filtered files
+tissue_data <- lapply(tissue_file, read.delim, as.is=T, sep="\t", header=T)
+names(tissue_data) <- names # assign sample names
+
+# Merge data frames in the list based on the common column 'ID'
+combined_df <- Reduce(function(x, y) merge(x, y, by = "Geneid", all = TRUE), tissue_data)
+
+# Extract row names and remove them from the data frame
+rownames(combined_df) <- combined_df[,1]
+combined_df <- combined_df[,-1]
+colnames(combined_df) <- names
+
+# Convert the data frame to a sparse matrix
+mat <- as.matrix(combined_df)
+
+sparsematrix <- as(mat, "sparseMatrix") 
+sparsematrix
+
+
+# Print the combined data frame
+head(sparsematrix)
+
+c.sce <- SingleCellExperiment(
+    assays = list(counts = sparsematrix),
+    colData = DataFrame(sample_name = colnames(sparsematrix), tissue_type = rep('All', ncol(sparsematrix)))
+  )
+rowData(c.sce)$gene_names <- rownames(sparsematrix)
+rownames(colData(c.sce)) <- NULL
+rownames(c.sce) <- NULL
+
+colData(c.sce)
+rowData(c.sce)
+
+
+# Save RDS object
+#saveRDS(c.sce, "../caloric2020_sce.rds")
+
+```
 
 # Read the raw counts, gene names, and barcodes for each individual and tissue:
 
@@ -106,44 +161,4 @@ brain_files
 ```
 
 
-
-# Make `SingleCellExperiment` data with all tissues combined
-
-```{r}
-# Load in all samples
-file_list <- list.files(mydir, full.names = TRUE)
-
-# Filter files containing the pattern "all_rawcounts"
-tissue <- "all_rawcounts"
-tissue_file <- subset(file_list, grepl(tissue, file_list))
-
-
-# Get sample names from files
-mytitles <- basename(tissue_file) # get just the file's name
-names <- sub("_all_rawcounts.[a-z]*.[a-z]*.gz", "", mytitles) # Grab only Sample name and tissue
-names
-
-# Read in the filtered files
-tissue_data <- lapply(tissue_file, read.delim, as.is=T, sep="\t", header=T)
-names(tissue_data) <- names # assign sample names
-
-# Merge data frames in the list based on the common column 'ID'
-combined_df <- Reduce(function(x, y) merge(x, y, by = "Geneid", all = TRUE), tissue_data)
-
-# Extract row names and remove them from the data frame
-rownames(combined_df) <- combined_df[,1]
-combined_df <- combined_df[,-1]
-colnames(combined_df) <- names
-
-# Convert the data frame to a sparse matrix
-mat <- as.matrix(combined_df)
-
-sparsematrix <- as(mat, "sparseMatrix") 
-sparsematrix
-
-
-# Print the combined data frame
-head(sparsematrix)
-
-```
 
