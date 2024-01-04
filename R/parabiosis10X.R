@@ -56,7 +56,7 @@
 parabiosis10X <- function (metadata = FALSE)
 {
   hub <- ExperimentHub::ExperimentHub()
-  title <- "Parabiosis10X"
+  title <- "TabulaMurisSmartSeq2"
 
   eh <- .get_ExperimentHub(hub, title)
   ehid <- eh$ah_id

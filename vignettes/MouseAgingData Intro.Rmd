@@ -19,11 +19,14 @@ knitr::opts_chunk$set(
 
 # Load Mouse Aging Data
 
-The `TabulaMurisData` data package provides access to the 10x and SmartSeq2
-single-cell RNA-seq data sets from 
-[the Tabula Muris Consortium](http://tabula-muris.ds.czbiohub.org/). 
-The contents of the package can be seen by querying the ExperimentHub for the
-package name.
+The `MouseAgingData` package provides analysis-ready data resources of different
+aging omics datasets, including the aging mouse brain single cell study
+(Ximerakis et al., 2019), aging mouse brain parabiosis single cell study
+(Ximerakis et al., 2023). In addition, two relevant transcriptomic studies of
+rejuvenation in the GEO database are also available, including: an aging mouse
+caloric restriction single cell study (GSE137869, Ma et al., 2020), and an aging
+mouse exercise single cell study (GSE196364, Liu et al., 2022). The contents of
+the package can be accesssed by querying the ExperimentHub with the package name.
 
 ```{r}
 suppressPackageStartupMessages({
@@ -37,8 +40,9 @@ query(eh, "MouseAgingData")
 ```
 
 The individual data sets can be accessed using either their ExperimentHub
-accession number, or the convenience functions provided in this package. For
-example, for the 10x data:
+accession number, or the provided functions in this package. For example, to
+load the parabiosis 10X Genomics droplet data from Ximerakis et al. 2023, do the
+following:
 
 ```{r}
 droplet <- eh[["EH1617"]]
@@ -47,6 +51,11 @@ droplet <- parabiosis10X()
 droplet
 ```
 
+To view a simple workflow to analyze and visualize the downloaded data following the [OSCA Single-Cell Workbook](https://bioconductor.org/books/3.18/OSCA.basic/), do the following:
+
+```{r}
+browseVignettes("MouseAgingData")
+```
 
 # Session info
 
