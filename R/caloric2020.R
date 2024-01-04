@@ -1,4 +1,4 @@
-#' Access the caloric 2019 single-cell RNA-seq data
+#' Access the caloric 2020 single-cell RNA-seq data
 #'
 #' Access the raw (10x Genomics) RNA-seq data from the caloric restriction study
 #' by Ma et al. 2020
