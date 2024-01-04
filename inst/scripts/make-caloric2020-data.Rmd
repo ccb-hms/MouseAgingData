@@ -153,8 +153,6 @@ for (i in 1:3){
 }
 
 
-
-
 brain_files <- subset(file_list, grepl("Brain", file_list) & grepl("*genes*", file_list))
 brain_files
 

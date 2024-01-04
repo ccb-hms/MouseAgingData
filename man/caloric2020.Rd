@@ -2,7 +2,7 @@
 % Please edit documentation in R/caloric2020.R
 \name{caloric2020}
 \alias{caloric2020}
-\title{Access the caloric 2019 single-cell RNA-seq data}
+\title{Access the caloric 2020 single-cell RNA-seq data}
 \usage{
 caloric2020(
   tissues = "All",
