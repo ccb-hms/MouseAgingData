@@ -135,17 +135,15 @@ rownames(combined_df) <- combined_df[,1]
 combined_df <- combined_df[,-1]
 colnames(combined_df) <- names
 
-
 # Convert the data frame to a sparse matrix
-sparse_matrix <- sparseMatrix(i = nrow(combined_df), 
-                              j = length(combined_df))
+mat <- as.matrix(combined_df)
 
+sparsematrix <- as(mat, "sparseMatrix") 
+sparsematrix
 
 
 # Print the combined data frame
-print(combined_df)
-
-
+head(sparsematrix)
 
 ```
 

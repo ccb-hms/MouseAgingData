@@ -1,13 +1,10 @@
-#' Access the Tabula Muris Senis droplet single-cell RNA-seq data
+#' Access the caloric 2019 single-cell RNA-seq data
 #'
-#' Access the droplet (10x Genomics) RNA-seq data from the Tabula Muris Senis
-#' consortium.
+#' Access the raw (10x Genomics) RNA-seq data from the caloric restriction study
+#' by Ma et al. 2020
 #'
-#' The data set was downloaded from figshare
-#' (https://figshare.com/articles/dataset/Processed_files_to_use_with_scanpy_/8273102?file=23938934
-#' for the full data set,
-#' https://figshare.com/articles/dataset/Tabula_Muris_Senis_Data_Objects/12654728
-#' for the individual tissue ones).
+#' The data set was downloaded from GEO assession number GSE137869
+#' (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE137869).
 #'
 #' @return If \code{infoOnly} is \code{FALSE}, returns a named list of
 #'   \linkS4class{SingleCellExperiment} objects (one per tissue requested
@@ -42,7 +39,7 @@
 #'
 #' @importFrom ExperimentHub ExperimentHub
 #'
-caloric2019 <- function(tissues = "All", processedCounts = FALSE,
+caloric2020 <- function(tissues = "All", processedCounts = FALSE,
                                     reducedDims = TRUE, infoOnly = FALSE) {
   allowedTissues <- listTabulaMurisSenisTissues(dataset = "Droplet")
   if (!all(tissues %in% allowedTissues)) {
