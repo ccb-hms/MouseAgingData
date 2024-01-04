@@ -160,5 +160,12 @@ brain_files
 
 ```
 
+## References
 
+Ma et al. (2020). Caloric Restriction Reprograms the Single-Cell Transcriptional Landscape of Rattus Norvegicus Aging. *Cell*. 2020 Mar 5;180(5):984-1001.e22. doi: [10.1016/j.cell.2020.02.008](https://pubmed.ncbi.nlm.nih.gov/32109414/). Epub 2020 Feb 27. PMID: 32109414.
 
+## Session info
+
+```{r}
+sessionInfo()
+```
