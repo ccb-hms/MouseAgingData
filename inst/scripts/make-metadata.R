@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 ###
 
-# Parabiosis
+# Parabiosis10X
 parabiosis <- data.frame(
   Title = "Parabiosis10X",
   Description = "10X Genomics processed single-cell dataset from Ximerakis et al. 2023",
