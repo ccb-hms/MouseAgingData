@@ -23,7 +23,7 @@
 #'
 #' # Metadata ---------------------------------------------------------------
 #'
-#' The \code{parabiosis_metadata} variable contains information about each of these samples.
+#' The `colData` slot contains information about the cells and samples.
 #'
 #' The column metadata for called cells contains:
 #' \describe{

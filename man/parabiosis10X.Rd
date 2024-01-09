@@ -29,7 +29,7 @@ A reminder of the heterochronic groups included in this study is available below
 Aging OX v YX; RJV: OY v OX; AGA YO v YX
 }
 \section{Metadata ---------------------------------------------------------------}{
-The \code{parabiosis_metadata} variable contains information about each of these samples.
+The \code{colData} slot contains information about the cells and samples.
 
 The column metadata for called cells contains:
 \describe{
