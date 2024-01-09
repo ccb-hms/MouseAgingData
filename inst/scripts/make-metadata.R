@@ -23,33 +23,32 @@ parabiosis <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# Dataset 2
-# df_smartseq2 <- data.frame(
-#   Title = "TabulaMurisSmartSeq2",
-#   Description = "SmartSeq2 data from Tabula Muris consortium",
-#   BiocVersion = "3.8",
-#   Genome = "mm10plus",
-#   SourceType = "rds",
-#   SourceUrl = "https://s3.amazonaws.com/czbiohub-tabula-muris/TM_facs_mat.rds",
-#   SourceVersion = NA,
-#   Species = "Mus musculus",
-#   TaxonomyId = "10090",
-#   Coordinate_1_based = NA,
-#   DataProvider = "Tabula Muris Consortium",
-#   Maintainer = "Charlotte Soneson <charlottesoneson@gmail.com>",
-#   RDataClass = "SingleCellExperiment",
-#   DispatchClass = "Rds",
-#   RDataPath = "TabulaMurisData/TabulaMurisSmartSeq2.rds",
-#   stringsAsFactors = FALSE
-# )
+# caloric2020
+caloric2020 <- data.frame(
+  Title = "caloric2020",
+  Description = "Single-nucleus RNA data from Ma et al. 2020",
+  BiocVersion = "3.18",
+  Genome = "mRatBN7.2",
+  SourceType = "rds",
+  SourceUrl = "",
+  SourceVersion = NA,
+  Species = "Rattus norvegicus",
+  TaxonomyId = 10116,
+  Coordinate_1_based = NA,
+  DataProvider = "Lee Rubin at Harvard Stem Cell Institute",
+  Maintainer = "Tram Nguyen <Tram_Nguyen@hms.harvard.edu>",
+  RDataClass = "SingleCellExperiment",
+  DispatchClass = "Rds",
+  RDataPath = "MouseAgingData/caloric2020_sce.RDS",
+  stringsAsFactors = FALSE
+)
 
 ## Combined meta-data
-# df_all <- base::rbind(
-#   parabiosis,
-#   df_smartseq2
-# )
+df_all <- base::rbind(
+   parabiosis,
+   caloric2020
+   )
 
-df_all <- parabiosis
 
 ## Save .csv file
 write.csv(df_all, file = "inst/extdata/metadata.csv", row.names = FALSE)
