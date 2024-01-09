@@ -1,27 +1,37 @@
 Package: MouseAgingData
-Title: Multi-omics Data Across Several Mouse Aging Projects from Rubin Lab
-Version: 0.99.6
-Authors@R: 
-    person("Tram", "Nguyen", , "Tram_Nguyen@hms.harvard.edu", 
+Title: Multi-omics Data Across Several Mouse Aging Projects
+Version: 0.99.7
+Authors@R:
+  person("Tram", "Nguyen", email = "Tram_Nguyen@hms.harvard.edu", 
     role = c("aut", "cre"))
-Description: This package includes analysis-ready data resource of different aging omics datasets, including the aging mouse brain single cell study (Ximerakis et al., 2019), aging mouse brain parabiosis single cell study (Ximerakis et al., 2023). In addition, two relevant transcriptomic studies of rejuvenation in the GEO database are also available, including: an aging mouse caloric restriction single cell study (GSE137869, Ma et al., 2020), and an aging mouse exercise single cell study (GSE196364, Liu et al., 2022). 
-License: MIT + file LICENSE
+Description: This package includes analysis-ready data resource of different 
+  aging omics datasets, including the aging mouse brain single cell study 
+  (Ximerakis et al., 2019), aging mouse brain parabiosis single cell study 
+  (Ximerakis et al., 2023). In addition, two relevant transcriptomic studies 
+  of rejuvenation in the GEO database are also available, including: an aging mouse caloric restriction single cell study (GSE137869, Ma et al., 2020), and an aging mouse exercise single cell study (GSE196364, Liu et al., 2022). 
+License: Artistic-2.0
 Encoding: UTF-8
-biocViews: ExperimentData, ExpressionData, SequencingData, RNASeqData, SingleCellData, ExperimentHub, Mus_musculus_Data
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3.9000
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
+Depends:
+    R,
+    SingleCellExperiment
 Imports: 
     BiocGenerics,
     ExperimentHub,
-    KernSmooth,
     methods,
-    S4Vectors,
-    Seurat,
-    SingleCellExperiment
-Depends: 
-    R (>= 2.10)
+    S4Vectors
+Suggests: 
+    BiocStyle,
+    knitr,
+    rmarkdown
+biocViews: ExperimentData, 
+    ExpressionData, 
+    SequencingData, 
+    RNASeqData, 
+    SingleCellData, 
+    ExperimentHub, 
+    Mus_musculus_Data
+VignetteBuilder: knitr
+
 LazyData: true
