@@ -62,8 +62,15 @@ names(colData(sce))[which(names(colData(sce)) =="percent.ribo")] <- "percent_rib
 counts(sce)
 rowData(sce) <- NULL # Remove gene ID from rowData
 
-# remove current metadata and add cell colors matching Ximerakis et al. 2023
+# Coerce columns to factors
+cols <- c("animal", "batch", "parabiosis_category", "cell_type", "subpopulation")
+colData(sce)[cols] <- lapply(colData(sce)[cols], factor)
 
+# Change UMAP and TSNE column names
+colnames(reducedDim(sce, "UMAP")) <- c("UMAP1", "UMAP2")
+colnames(reducedDim(sce, "TSNE")) <- c("TSNE1", "TSNE2")
+
+# Remove current metadata and add cell colors matching Ximerakis et al. 2023
 color.map.list_All_Lin=c(
   #"OPC","OLG","OEG",
   "olivedrab4", "olivedrab3", "olivedrab1",
