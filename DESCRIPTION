@@ -1,17 +1,19 @@
 Package: MouseAgingData
-Title: Multi-omics Data Across Several Mouse Aging Projects
-Version: 0.99.7
+Title: Multi-omics data access for studies investigating the effects of aging
+Version: 0.99.8
 Authors@R:
-  person("Tram", "Nguyen", email = "Tram_Nguyen@hms.harvard.edu", 
+    person("Tram", "Nguyen", email = "Tram_Nguyen@hms.harvard.edu", 
     role = c("aut", "cre"))
-Description: This package includes analysis-ready data resource of different 
-  aging omics datasets, including the aging mouse brain single cell study 
-  (Ximerakis et al., 2019), aging mouse brain parabiosis single cell study 
-  (Ximerakis et al., 2023). In addition, two relevant transcriptomic studies 
-  of rejuvenation in the GEO database are also available, including: 
-  an aging mouse caloric restriction single cell study 
-  (GSE137869, Ma et al., 2020), and an aging mouse exercise single cell study 
-  (GSE196364, Liu et al., 2022). 
+Description: This MouseAgingData package includes analysis-ready data resource 
+    of different aging omics datasets, including the aging mouse brain single 
+    cell study (Ximerakis et al., 2019), aging mouse brain parabiosis single 
+    cell study (Ximerakis et al., 2023). In addition, two relevant 
+    transcriptomic studies of rejuvenation in the GEO database are also 
+    available, including an aging mouse caloric restriction single cell study 
+    (GSE137869, Ma et al., 2020), and an aging mouse exercise single cell study 
+    (GSE196364, Liu et al., 2022).
+URL: https://github.com/ccb-hms/MouseAgingData
+BugReports: https://github.com/ccb-hms/MouseAgingData/issues
 License: Artistic-2.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -28,13 +30,14 @@ Suggests:
     BiocStyle,
     knitr,
     rmarkdown
-biocViews: ExperimentData, 
+biocViews: 
+    ExperimentData, 
     ExpressionData, 
     SequencingData, 
     RNASeqData, 
     SingleCellData, 
     ExperimentHub, 
     Mus_musculus_Data
-VignetteBuilder: knitr
-
+VignetteBuilder: 
+    knitr
 LazyData: true
