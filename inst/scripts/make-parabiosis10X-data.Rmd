@@ -24,7 +24,7 @@ The final processed dataset includes 105,329 cells and 20,905 genes which can be
 
 The [un-normalized count table](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fmatrix%2Emtx%2Egz), [cell barcodes](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fbarcodes%2Etsv%2Egz), [gene symbols](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fgenes%2Etsv%2Egz), and [metadata](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Ffiltered%5Fmetadata%2Etxt%2Egz) were all downloaded from GEO [accession number GSE222510](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE222510) (accessed January 3, 2024).
 
-UMAP, TSNE, PCA coordinates were provided courtesy of the authors Ximerakis et al. 2023.
+UMAP, TSNE, PCA coordinates were provided courtesy of the authors.
 
 ## Generate `SingleCellExperiment` object
 
