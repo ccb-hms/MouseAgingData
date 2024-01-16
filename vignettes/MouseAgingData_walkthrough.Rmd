@@ -46,7 +46,7 @@ BiocManager::install("MouseAgingData")
 
 # Setup
 
-Now, load the package and dependencies used in the vignette.
+Load the package and dependencies used in the vignette.
 
 ```{r, setup, message = FALSE}
 library(DropletUtils)
