@@ -1,6 +1,6 @@
 # MouseAgingData
 
-## Mouse aging multi-omics project data from Lee Rubin Lab at Harvard Medical School
+## Data resources across several mouse aging studies
 
 This package includes analysis-ready data resource of different 
 aging omics datasets, including the aging mouse brain single cell study 
@@ -53,7 +53,7 @@ library(MouseAgingData)
 
 This package contains the processed 10X Genomics data from Ximerakis & Holton et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)) prepared based on the protocol detailed in their paper. The processed dataset contains 
 105,329 cells and 20905 features for 31 cell types. Low quality cells and 
-animals were removed following their methods resulting in 8 OX, 8 YX, 
+animals were removed following the paper's methods resulting in 8 OX, 8 YX, 
 7 YY, 9 YO, 7 OO, 11 OY animals.
 
 This package includes gene counts, cell annotation, and reduced-dimension 
