@@ -63,7 +63,7 @@ library(ExperimentHub)
 The `MouseAgingData` package provides analysis-ready data resources of different
 aging omics datasets, including the aging mouse brain single cell study
 Ximerakis et al., [2019](https://www.nature.com/articles/s41593-019-0491-3),
-aging mouse brain parabiosis single cell study Ximerakis et al.,
+aging mouse brain parabiosis single cell study Ximerakis & Holton et al.,
 [2023](https://pubmed.ncbi.nlm.nih.gov/37118429/). In addition, two relevant
 transcriptomic studies of rejuvenation are also provided: an aging mouse caloric
 restriction single cell study Ma et al.,
@@ -73,11 +73,12 @@ The contents of the package can be accessed by querying ExperimentHub with the
 package name.
 
 This vignette performs a simple analysis of the parabiosis 10X Genomics
-single-cell dataset from Ximerakis et al.
+single-cell dataset from Ximerakis & Holton et al.
 ([2023](https://www.nature.com/articles/s43587-023-00373-6)). The analysis
 follows the Basics of Single-Cell Analysis in the [OSCA Bioconductor book Quick
 Start
 Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple).
+
 Steps in this vignette include: quality control, normalization, various forms of
 dimensionality reduction, clustering into subpopulations, detection of marker
 genes, and annotation of cell types.

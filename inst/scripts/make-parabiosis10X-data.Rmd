@@ -12,7 +12,7 @@ options(width = 80)
 
 ## Data pre-processing
 
-Basic processing using the R package Seurat has already been performed on this data to remove low-quality cells and animals following the methods described in Ximerakis et al. 2023. Briefly, the initial dataset contained 158,767 cells with data for 21,876 genes. The data were log-normalized and scaled to 10,000 transcripts per cell. This was used to create a UMAP using the first 50 PCs from a Principal Components Analysis to find cell clusters with the function `FindClusters()`. All clusters with only one cell, \>8% mitochondrial genes, or minimum number of RNA transcripts counts \< 1,000 were removed. Animals with number of genes \< 700, percent mitochondrial \> 1.5 and not having any cell contribution to each clusters were identified for exclusion.
+Basic processing using the R package Seurat has already been performed on this data to remove low-quality cells and animals following the methods described in Ximerakis & Holton et al. 2023. Briefly, the initial dataset contained 158,767 cells with data for 21,876 genes. The data were log-normalized and scaled to 10,000 transcripts per cell. This was used to create a UMAP using the first 50 PCs from a Principal Components Analysis to find cell clusters with the function `FindClusters()`. All clusters with only one cell, \>8% mitochondrial genes, or minimum number of RNA transcripts counts \< 1,000 were removed. Animals with number of genes \< 700, percent mitochondrial \> 1.5 and not having any cell contribution to each clusters were identified for exclusion.
 
 The second round of quality control (QC) filtering removed clusters with minimum percentage mitochondria 0, maximum percentage mitochondria 5%, min_nFeature_RNA 250, max_nFeature_RNA 6000, min_nCount_RNA 200, max_nCount_RNA 30000, min_cells=5. After this second round of QC, the final dataset retained 130,889 cells and 20,905 genes.
 
@@ -42,7 +42,12 @@ genes <- read.table("genes.tsv", header = FALSE, stringsAsFactors = FALSE)
 metadata <- read.table("filtered.metadata.txt", header = TRUE, sep = "")
 
 # Put all file into one directory called raw_files/10X/ and read them in with DropletUtils
-sce <- read10xCounts("raw_files/10X/", col.names = FALSE)
+
+# By default, read10xCounts assumes input is separate files each corresponding to a 10X sample. Change this with type argument.
+
+sce <- read10xCounts("~/Documents/Rubin Mouse Aging/data/parabiosis/raw_files/10X/", col.names = FALSE, type = "sparse")
+
+# type = "sparse" is a conventional column-sparse compressed matrix format produced by the CellRanger pipeline.
 
 stopifnot(all(rownames(counts(sce)) == genes))
 
@@ -52,6 +57,9 @@ dim(sce) # 20905 105329
 colnames(sce) <- NULL # Remove barcodes in the colnames
 colData(sce)$orig.ident <- NULL
 colData(sce)$sample_order <- NULL
+
+# metadata(sce)$Samples autopopulates to the file prefix. 
+metadata(sce)$Samples <- NULL
 
 # Rename column names of metadata
 names(colData(sce))[which(names(colData(sce)) =="animal_name")] <- "parabiosis_category"
@@ -67,10 +75,17 @@ cols <- c("animal", "batch", "parabiosis_category", "cell_type", "subpopulation"
 colData(sce)[cols] <- lapply(colData(sce)[cols], factor)
 
 # Incorporate UMAP, TSNE, and PCA coordinates provided by the authors
+TSNE_coord <- readRDS("~/Documents/Rubin Mouse Aging/data/parabiosis/norm_files/tsne_original.rds")
+
+UMAP_coord <- readRDS("~/Documents/Rubin Mouse Aging/data/parabiosis/norm_files/umap_original.rds")
+
 pca_coord <- readRDS("../pca_original.rds")
 pc50 <- pca_coord@cell.embeddings # We want cell.embedding which stores the coordinates for each cell in low-dimensional space.
 
-reducedDim(sce, "PCA") <- pc50 # Add another component to reducedDims
+reducedDim(sce, "TSNE") <- TSNE_coord # Add another component to reducedDims
+reducedDim(sce, "UMAP") <- UMAP_coord
+reducedDim(sce, "PCA") <- pc50 
+
 # reorder the list
 reducedDims(sce) <- reducedDims(sce)[c("PCA", "UMAP", "TSNE")] # Can do this with assays as well.
 
@@ -80,7 +95,7 @@ colnames(reducedDim(sce, "UMAP")) <- c("UMAP1", "UMAP2")
 colnames(reducedDim(sce, "TSNE")) <- c("TSNE1", "TSNE2")
 colnames(reducedDim(sce, "PCA")) <-  sub("_", "", colnames(reducedDim(sce, "PCA")))
 
-# Remove current metadata and add cell colors matching Ximerakis et al. 2023
+# Remove current metadata and add cell colors matching Ximerakis & Holton et al. 2023
 color.map.list_All_Lin=c(
   #"OPC","OLG","OEG",
   "olivedrab4", "olivedrab3", "olivedrab1",
@@ -103,7 +118,6 @@ names(color.map.list_All_Lin)<-c("OPC","OLG","OEG",
                                  "MG","MAC","MNC","DC","NEUT","T_cell","NK", "B_cell")
 
 
-metadata(sce)$Samples <- NULL
 metadata(sce)$cell_colors <- color.map.list_All_Lin # All cell colors into metadata slot
 sce
 ```
@@ -116,7 +130,7 @@ saveRDS(sce, "parabiosis_sce.rds")
 
 ## References
 
-Ximerakis et al. (2023) Heterochronic parabiosis reprograms the mouse brain transcriptome by shifting aging signatures in multiple cell types. *Nat Aging* 3, 327--345. <DOI:https://doi.org/10.1038/s43587-023-00373-6>.
+Ximerakis & Holton et al. (2023) Heterochronic parabiosis reprograms the mouse brain transcriptome by shifting aging signatures in multiple cell types. *Nat Aging* 3, 327--345. <DOI:https://doi.org/10.1038/s43587-023-00373-6>.
 
 ## Session info
 
