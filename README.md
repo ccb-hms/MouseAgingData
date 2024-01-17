@@ -5,10 +5,7 @@
 This package includes analysis-ready data resource of different 
 aging omics datasets, including the aging mouse brain single cell study 
 (Ximerakis et al., 2019), aging mouse brain parabiosis single cell study 
-(Ximerakis et al., 2023). In addition, two relevant transcriptomic studies of 
-rejuvenation in the GEO database are also available, including: an aging mouse 
-caloric restriction single cell study (GSE137869, Ma et al., 2020), and an 
-aging mouse exercise single cell study (GSE196364, Liu et al., 2022). 
+(Ximerakis & Holton et al., 2023). In addition, two relevant transcriptomic studies of rejuvenation in the GEO database are also available, including: an aging mouse caloric restriction single cell study (GSE137869, Ma et al., 2020), and an aging mouse exercise single cell study (GSE196364, Liu et al., 2022). 
 
 <br>
 
@@ -52,25 +49,16 @@ library(MouseAgingData)
 
 ## Datasets
 
-#### 1. Ximerakis et al. 2023 Parabiosis 10X Genomics Single-Cell Data
+#### 1. Ximerakis & Holton et al. 2023 Parabiosis 10X Genomics Single-Cell Data
 
-This package contains the processed 10X Genomics data from Ximerakis et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)) prepared based on 
-the protocol detailed in their paper. The processed dataset contains 
+This package contains the processed 10X Genomics data from Ximerakis & Holton et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)) prepared based on the protocol detailed in their paper. The processed dataset contains 
 105,329 cells and 20905 features for 31 cell types. Low quality cells and 
-animals were removed following Ximerakis et al. (2023) resulting in 8 OX, 8 YX, 
+animals were removed following their methods resulting in 8 OX, 8 YX, 
 7 YY, 9 YO, 7 OO, 11 OY animals.
-
-We also provide the raw single-cell data outputted from CellRanger 
-for users to explore and assign their own filering thresholds for quality. The 
-raw dataset contains 158,767 cells with data for 21,876 features outputted from 
-CellRanger for a total of 55 animals.
 
 This package includes gene counts, cell annotation, and reduced-dimension 
 representations as separate components of the processed data, and also as a 
 stored `SingleCellExperiment` object.
-
-Finally, a reminder of the heterochronic groups included in this study is available below:
-Aging OX v YX; RJV: OY v OX; AGA YO v YX
 
 <br>
 
