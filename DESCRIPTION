@@ -1,6 +1,6 @@
 Package: MouseAgingData
 Title: Multi-omics data access for studies investigating the effects of aging
-Version: 0.99.8
+Version: 0.99.9
 Authors@R:
     person("Tram", "Nguyen", email = "Tram_Nguyen@hms.harvard.edu", 
     role = c("aut", "cre"))
