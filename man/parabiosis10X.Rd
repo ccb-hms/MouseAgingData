@@ -36,13 +36,13 @@ The column metadata for called cells contains:
 \item{\code{barcode}:}{Character, unique cell identifier.}
 \item{\code{nCount_RNA}:}{Numeric, number of RNA transcripts.}
 \item{\code{nFeature_RNA}:}{Integer, number of RNA features.}
-\item{\code{animal}:}{Factor, unique animal identifier, includes heterochronic or isochronic condition.}
-\item{\code{batch}:}{Factor, sequencing batch identifier.}
-\item{\code{parabiosis_category}:}{Factor, isochronic or heterochronic conditions.}
+\item{\code{animal}:}{Character, unique animal identifier, includes heterochronic or isochronic condition.}
+\item{\code{batch}:}{Character, sequencing batch identifier.}
+\item{\code{parabiosis_category}:}{Character, isochronic or heterochronic conditions.}
 \item{\code{percent_mito}:}{Numeric, percentage of mitochondrial content.}
 \item{\code{percent_ribo}:}{Numeric, percentage of ribosomal content.}
-\item{\code{cell_type}:}{Factor, cell type to which the cell was assigned.}
-\item{\code{subpopulation}:}{Factor, cell subpopulation to which cell was assigned.}
+\item{\code{cell_type}:}{Character, cell type to which the cell was assigned.}
+\item{\code{subpopulation}:}{Character, cell subpopulation to which cell was assigned.}
 }
 }
 
