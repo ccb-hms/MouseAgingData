@@ -2,11 +2,8 @@
 
 ## Data resources across several mouse aging studies
 
-This package includes analysis-ready data resource of different 
-aging omics datasets, including the aging mouse brain single cell study 
-(Ximerakis et al., 2019), aging mouse brain parabiosis single cell study 
-(Ximerakis & Holton et al., 2023). In addition, two relevant transcriptomic studies of rejuvenation in the GEO database are also available, including: an aging mouse caloric restriction single cell study (GSE137869, Ma et al., 2020), and an aging mouse exercise single cell study (GSE196364, Liu et al., 2022). 
-
+This MouseAgingData package provides analysis-ready data resources from different studies focused on aging and rejuvenation in mice. Studies include a 10X Genomics single-cell data sets from an aging mouse brain parabiosis transcriptomic study containing 105329 cells and 20905 features (Ximerakis & Holton et al., 2023). The data is provided as a SingleCellExperiment R object and includes a table of raw counts and cell metadata.
+    
 <br>
 
 
