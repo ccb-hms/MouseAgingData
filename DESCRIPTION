@@ -3,7 +3,7 @@ Title: Multi-omics data access for studies investigating the effects of aging
 Version: 0.99.11
 Authors@R: c(person("Tram", "Nguyen", role = c("aut", "cre"), 
                     email = "Tram_Nguyen@hms.harvard.edu", 
-                    comment = c(ORCID = "0000-0003-4809-6227"))
+                    comment = c(ORCID = "0000-0003-4809-6227")))
 Description: This MouseAgingData package provides analysis-ready data resources 
     from different studies focused on aging and rejuvenation in mice. Studies 
     include a 10X Genomics single-cell data sets from an aging mouse brain 
