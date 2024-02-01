@@ -3,6 +3,9 @@ title: "Preparing the Parabiosis 10X droplet dataset for ExperimentHub"
 author: "Tram Nguyen"
 date: "`r Sys.Date()`"
 output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -12,38 +15,48 @@ options(width = 80)
 
 # Data pre-processing
 
-Basic processing using the R package Seurat has already been performed on this
-data to remove low-quality cells and animals following the methods described in
-Ximerakis & Holton et al. 2023. Briefly, the initial dataset contained 158,767
-cells with data for 21,876 genes. The data were log-normalized and scaled to
-10,000 transcripts per cell. This was used to create a UMAP using the first 50
-PCs from a Principal Components Analysis to find cell clusters with the function
-`FindClusters()`. All clusters with only one cell, \>8% mitochondrial genes, or
-minimum number of RNA transcripts counts \< 1,000 were removed. Animals with
-number of genes \< 700, percent mitochondrial \> 1.5 and not having any cell
-contribution to each clusters were identified for exclusion.
+Basic processing using the R package Seurat has already been performed
+on this data to remove low-quality cells and animals following the
+methods described in Ximerakis & Holton et al. 2023. Briefly, the
+initial dataset contained 158,767 cells with data for 21,876 genes. The
+data were log-normalized and scaled to 10,000 transcripts per cell. This
+was used to create a UMAP using the first 50 PCs from a Principal
+Components Analysis to find cell clusters with the function
+`FindClusters()`. All clusters with only one cell, \>8% mitochondrial
+genes, or minimum number of RNA transcripts counts \< 1,000 were
+removed. Animals with number of genes \< 700, percent mitochondrial \>
+1.5 and not having any cell contribution to each clusters were
+identified for exclusion.
 
-The second round of quality control (QC) filtering removed clusters with minimum
-percentage mitochondria 0, maximum percentage mitochondria 5%, min_nFeature_RNA
-250, max_nFeature_RNA 6000, min_nCount_RNA 200, max_nCount_RNA 30000,
-min_cells=5. After this second round of QC, the final dataset retained 130,889
-cells and 20,905 genes.
+The second round of quality control (QC) filtering removed clusters with
+minimum percentage mitochondria 0, maximum percentage mitochondria 5%,
+min_nFeature_RNA 250, max_nFeature_RNA 6000, min_nCount_RNA 200,
+max_nCount_RNA 30000, min_cells=5. After this second round of QC, the
+final dataset retained 130,889 cells and 20,905 genes.
 
-Finally, probable doublet artifacts were removed. Doublets/multiplets were
-marked as any cluster in which \>40% of its cells express seven of the top ten
-genes specific to an initially identified cell type and any other outside of the
-class of the cell type with which it is associated.
+Finally, probable doublet artifacts were removed. Doublets/multiplets
+were marked as any cluster in which \>40% of its cells express seven of
+the top ten genes specific to an initially identified cell type and any
+other outside of the class of the cell type with which it is associated.
 
-The final processed dataset includes 105,329 cells and 20,905 genes which can be
-downloaded from GEO.
+The final processed dataset includes 105,329 cells and 20,905 genes
+which can be downloaded from GEO.
 
 # Download processed data
 
-The [un-normalized count table](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fmatrix%2Emtx%2Egz),[cell barcodes](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fbarcodes%2Etsv%2Egz), [gene symbols](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fgenes%2Etsv%2Egz), and [metadata](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Ffiltered%5Fmetadata%2Etxt%2Egz) were all downloaded from GEO [accession number GSE222510](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE222510)
+The [un-normalized count
+table](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fmatrix%2Emtx%2Egz),
+[cell
+barcodes](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fbarcodes%2Etsv%2Egz),
+[gene
+symbols](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Fraw%5Fgenes%2Etsv%2Egz),
+and
+[metadata](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE222510&format=file&file=GSE222510%5Ffiltered%5Fmetadata%2Etxt%2Egz)
+were all downloaded from GEO [accession number
+GSE222510](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE222510)
 (accessed January 3, 2024).
 
 UMAP, TSNE, PCA coordinates were provided courtesy of the authors.
-
 
 # Generate `SingleCellExperiment` object
 
@@ -174,9 +187,10 @@ saveRDS(sce, "parabiosis_sce.rds")
 
 # References
 
-Ximerakis & Holton et al. (2023) Heterochronic parabiosis reprograms the mouse
-brain transcriptome by shifting aging signatures in multiple cell types. *Nat
-Aging* 3, 327--345. <DOI:https://doi.org/10.1038/s43587-023-00373-6>.
+Ximerakis & Holton et al. (2023) Heterochronic parabiosis reprograms the
+mouse brain transcriptome by shifting aging signatures in multiple cell
+types. *Nat Aging* 3, 327--345.
+<DOI:https://doi.org/10.1038/s43587-023-00373-6>.
 
 # Session info
 

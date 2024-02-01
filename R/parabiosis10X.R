@@ -53,6 +53,9 @@
 #' aging signatures in multiple cell types.
 #' \emph{Nat Aging} 3, 327–345. DOI:https://doi.org/10.1038/s43587-023-00373-6.
 #'
+#' @examples
+#' data <- parabiosis10X()
+#' data_meta <- parabiosis10X(metadata = TRUE)
 #' @export
 #' @importFrom ExperimentHub ExperimentHub
 #' @importFrom SingleCellExperiment SingleCellExperiment

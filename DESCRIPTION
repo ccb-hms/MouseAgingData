@@ -36,6 +36,7 @@ biocViews:
     RNASeqData, 
     SingleCellData, 
     ExperimentHub, 
+    PackageTypeData,
     Mus_musculus_Data
 VignetteBuilder: 
     knitr
