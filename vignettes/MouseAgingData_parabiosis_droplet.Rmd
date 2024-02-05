@@ -197,7 +197,8 @@ accessed in the  `SingleCellExperiment` object in the `rowData()` slot.
 
 # PCA
 
-Below is a method for running a Principal Components Analysis using our previously defined HVGs. 
+Below is a method for running a Principal Components Analysis using our
+previously defined HVGs.
 
 ```{r, PCA, warning=FALSE}
 library(scater)
@@ -206,7 +207,8 @@ set.seed(1234)
 # Add PCA coords to sce object
 ```
 
-However, the authors have also provided us with the first 50 PCs used in their study. For consistent with their study, we will use these.
+However, the authors have also provided us with the first 50 PCs used in their
+study. For consistent with their study, we will use these.
 
 ```{r, viewPCA, warning=FALSE}
 head(reducedDim(sce, "PCA"))[1:5, 1:5]
@@ -257,13 +259,18 @@ example code to achieve this.
 Start with a UMAP.
 
 ```{r, UMAP2, fig.height = 4, fig.width = 6.5}
-# Add our UMAP to the reducedDims slot with the name "osca_UMAP" so we do not confused it with the author's UMAP coords.
+# Add our UMAP to the reducedDims slot with the name "osca_UMAP" so we do not
+# confused it with the author's UMAP coords.
 sce <- runUMAP(sce, dimred = 'PCA', name = "osca_UMAP")
 
-# When we want to access a specific item (here, "osca_UMAP") in the reducedDims element of the SingleCellExperiment object, we can use the function plotReducedDim with the argument dimred.
+# When we want to access a specific item (here, "osca_UMAP") in the reducedDims
+# element of the SingleCellExperiment object, we can use the function
+# plotReducedDim with the argument dimred.
 
-gg <- plotReducedDim(sce, dimred = "osca_UMAP", color_by = "cell_type", text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
+gg <- plotReducedDim(sce, dimred = "osca_UMAP", color_by = "cell_type", 
+                     text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + 
+    scale_color_manual(values=c(cell.color))
 ```
 
 Now with a TSNE.
@@ -275,8 +282,10 @@ set.seed(00101001101)
 # runTSNE() stores the t-SNE coordinates in the reducedDims
 sce <- runTSNE(sce, dimred = 'PCA', name = "osca_TSNE")
 
-gg <- plotReducedDim(sce, dimred = "osca_TSNE", color_by = "cell_type", text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
+gg <- plotReducedDim(sce, dimred = "osca_TSNE", color_by = "cell_type", 
+                     text_by = "cell_type") 
+gg + theme(legend.title=element_blank()) + 
+    scale_color_manual(values=c(cell.color))
 ```
 
 # Reference
