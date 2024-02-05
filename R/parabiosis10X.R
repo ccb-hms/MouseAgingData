@@ -65,7 +65,7 @@ parabiosis10X <- function (metadata = FALSE)
   eh <- ExperimentHub()
   title <- "Parabiosis10X"
 
-  eh <- query(eh, c("MouseAgingData"))
+  eh <- query(eh, title)
   ehid <- eh$ah_id
 
   if (metadata) {
