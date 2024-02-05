@@ -51,6 +51,11 @@ the animal.}
 }
 }
 
+\examples{
+data <- parabiosis10X()
+data_meta <- parabiosis10X(metadata = TRUE)
+
+}
 \references{
 Ximerakis & Holton et al. (2023)
 Heterochronic parabiosis reprograms the mouse brain transcriptome by shifting

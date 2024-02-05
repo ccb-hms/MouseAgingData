@@ -52,7 +52,7 @@ BiocManager::install("MouseAgingData")
 
 Now, load the package and dependencies used in the vignette.
 
-```{r, setup, message = FALSE}
+```{r, message = FALSE}
 library(DropletUtils)
 library(edgeR)
 library(Seurat)
@@ -115,43 +115,33 @@ endothelial cells, which showed dynamic transcriptional changes that affect
 vascular structure and function.
 
 This vignette walks through the process of quality control, normalization,
-various forms of dimensionality reduction, clustering into subpopulations,
-detection of marker genes, and annotation of cell types. PCA, UMAP, and tSNE
-coordinates used in the study were provided b the authors for visualization.
+various forms of dimensionality reduction, clustering, detection of marker
+genes, and annotation of cell types. PCA, UMAP, and tSNE coordinates used in the
+study were provided b the authors for visualization.
 
-Parabiosis single cell RNA-seq (Ximerakis, Holton et al Nature Aging 2023)
-105,329 cells, 31 cell types 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY 20905 features
-
-Processed: (ALL) reduced to: OLG, OPC, GLUT, GABA, EC, ASC Aging OX v YX; RJV:
-OY v OX; AGA YO v YX
+The parabiosis single cell RNA-seq (Ximerakis, Holton et al Nature Aging 2023)
+includes 105,329 cells, 31 cell types across 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY
+animals, and 20905 features
 
 
-# Load in the data
-
+# Load the data set
 
 ```{r, eval = FALSE}
 eh <- ExperimentHub()
 query(eh, c("MouseAgingData", "parabiosis10X"))
-```
-
-
-### Make the `SingleCellExperiment` object.
-
-Load cell barcodes, genes, and matrix files using "DropletUtils".
-
-```{r, Data Loading}
-library(MouseAgingData)
-
-# getWebData(format = "tsv", destination = "~/Desktop/", url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE222nnn/GSE222510/suppl/GSE222510_processed_barcodes.tsv.gz", header=F)
 
 # Eventually we can load in data through our package, for now:
-sce <- readRDS("~/Desktop/parabiosis_sce.rds")
+sce <- readRDS("~/Desktop/Final_aging_data/parabiosis_sce.rds")
 sce
 ```
 
 Do some quick QC to make sure the data loaded correctly and is what we expected.
 
 ```{r, Data check}
+
+sce <- readRDS("~/Desktop/Final_aging_data/parabiosis_sce.rds")
+sce
+
 # Check sce dimensions
 dim(sce)
 
@@ -165,18 +155,18 @@ metadata(sce)
 head(counts(sce)) 
 ```
 
-## 3. Quality control
+# Quality control
 
 In this step, we can explore and visualize mitochondrial content and read count.
 However, the authors have already removed low-quality cells and animals so we
 will skip this section in this vignette. For more details on their workflow, one
-can refer to the original article Ximerakis et al.
+can refer to the original article Ximerakis & Holton et al.
 ([2023](https://www.nature.com/articles/s43587-023-00373-6)). The [OSCA
 Bioconductor
 book](https://bioconductor.org/books/3.15/OSCA.basic/quality-control.html) also
 provides several examples of quality control steps as well.
 
-## 4. Normalization
+# Normalization
 
 ```{r, normalize}
 library(scran)
@@ -189,9 +179,11 @@ sce <- logNormCounts(sce)
 head(logcounts(sce))
 ```
 
-## 5. Feature selection
+# Feature selection
 
-Select an appropriate set of highly variable genes (HVGs).
+At this point a typical workflow, we could select an appropriate set of highly
+variable genes (HVGs), say the top 10% of genes with the highest variability in
+expression. Below is an example of how to do this.
 
 ```{r, feat select}
 library(scran)
@@ -199,15 +191,28 @@ dec <- modelGeneVar(sce)
 hvg <- getTopHVGs(dec, prop=0.1)
 ```
 
-## 6. PCA
+A logical index showing the 2000 HVG included in the original study can also be
+accessed in the  `SingleCellExperiment` object in the `rowData()` slot.
+
+
+# PCA
+
+Below is a method for running a Principal Components Analysis using our previously defined HVGs. 
 
 ```{r, PCA, warning=F}
 library(scater)
 set.seed(1234)
-sce <- runPCA(sce, ncomponents=25, subset_row=hvg) # Add PCA coords to sce object
+# sce <- runPCA(sce, ncomponents=25, subset_row=hvg) 
+# Add PCA coords to sce object
 ```
 
-## 7. Clustering
+However, the authors have also provided us with the first 50 PCs used in their study. For consistent with their study, we will use these.
+
+```{r, viewPCA, warning=F}
+head(reducedDim(sce, "PCA"))[1:5, 1:5]
+```
+
+# Clustering
 
 ```{r, clustering}
 library(bluster)
@@ -215,7 +220,7 @@ colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
                                BLUSPARAM=NNGraphParam(cluster.fun="louvain"))
 ```
 
-## 8. Visualization
+# Visualization
 
 For this dataset, the authors have already provided us with their exact UMAP and
 TSNE coordinates, as well as their color scheme representing the cell types from
@@ -228,22 +233,26 @@ cell.color <- metadata(sce)$cell_color
 
 library(scater)
 gg <- plotUMAP(sce, color_by = "cell_type", text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
+gg + theme(legend.title=element_blank()) + 
+    scale_color_manual(values=c(cell.color))
 ```
 
-This plot is a recreation of Fig. 2C from Ximerakis et al. 2023.
+This plot is a recreation of Fig. 2C from Ximerakis & Holton et al. 2023.
 
 We can also plot a TSNE with their provided coordinates.
 
 ```{r, plot provided TSNE, fig.height = 4, fig.width = 6.5}
 gg <- plotTSNE(sce, color_by = "cell_type", text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
+gg + theme(legend.title=element_blank()) + 
+    scale_color_manual(values=c(cell.color))
 ```
 
 <br>
 
-We can also create our own UMAP and TSNE plots following the OSCA workflow and
-save our own coordinates to the `SingleCellExperiment` object.
+If you would like to create your own UMAP and TSNE plots, please refer back to
+the [OSCA Bioconductor book](https://bioconductor.org/books/3.15/OSCA.basic/)
+and save our own coordinates to the `SingleCellExperiment` object. Below is some
+example code to achieve this.
 
 Start with a UMAP.
 
@@ -270,13 +279,13 @@ gg <- plotReducedDim(sce, dimred = "osca_TSNE", color_by = "cell_type", text_by 
 gg + theme(legend.title=element_blank()) + scale_color_manual(values=c(cell.color))
 ```
 
-## Reference
+# Reference
 
-Ximerakis et al. (2023) Heterochronic parabiosis reprograms the mouse brain
-transcriptome by shifting aging signatures in multiple cell types.
+Ximerakis & Holton et al. (2023) Heterochronic parabiosis reprograms the mouse
+brain transcriptome by shifting aging signatures in multiple cell types.
 \emph{Nat Aging} 3, 327–345. <DOI:https://doi.org/10.1038/s43587-023-00373-6>.
 
-## View Session Info
+# Session Info
 
 ```{r, sesh info}
 sessionInfo()
