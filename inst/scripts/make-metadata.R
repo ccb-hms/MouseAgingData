@@ -8,7 +8,7 @@ Parabiosis10X <- data.frame(
     Title = "Parabiosis10X",
     Description = paste0("10X Genomics processed single-cell dataset ",
                          "from Ximerakis & Holton et al. 2023"),
-    BiocVersion = "3.18",
+    BiocVersion = "3.19",
     Genome = "mm10",
     SourceType = "RDS",
     SourceUrl = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE222510",

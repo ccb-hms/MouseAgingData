@@ -56,6 +56,7 @@
 #' @examples
 #' data <- parabiosis10X()
 #' data_meta <- parabiosis10X(metadata = TRUE)
+#'
 #' @export
 #' @importFrom ExperimentHub ExperimentHub
 #' @importFrom SingleCellExperiment SingleCellExperiment
@@ -64,10 +65,10 @@
 #' @importFrom methods as
 parabiosis10X <- function (metadata = FALSE)
 {
-  hub <- ExperimentHub::ExperimentHub()
+  eh <- ExperimentHub::ExperimentHub()
   title <- "Parabiosis10X"
 
-  eh <- .get_ExperimentHub(hub, title)
+  eh <- query(eh, c("MouseAgingData"))
   ehid <- eh$ah_id
 
   if (metadata) {
