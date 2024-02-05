@@ -58,14 +58,11 @@
 #' data_meta <- parabiosis10X(metadata = TRUE)
 #'
 #' @export
-#' @importFrom ExperimentHub ExperimentHub
+#' @import ExperimentHub
 #' @importFrom SingleCellExperiment SingleCellExperiment
-#' @importFrom BiocGenerics sizeFactors
-#' @importClassesFrom S4Vectors DataFrame
-#' @importFrom methods as
 parabiosis10X <- function (metadata = FALSE)
 {
-  eh <- ExperimentHub::ExperimentHub()
+  eh <- ExperimentHub()
   title <- "Parabiosis10X"
 
   eh <- query(eh, c("MouseAgingData"))
