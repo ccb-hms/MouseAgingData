@@ -199,7 +199,7 @@ accessed in the  `SingleCellExperiment` object in the `rowData()` slot.
 
 Below is a method for running a Principal Components Analysis using our previously defined HVGs. 
 
-```{r, PCA, warning=F}
+```{r, PCA, warning=FALSE}
 library(scater)
 set.seed(1234)
 # sce <- runPCA(sce, ncomponents=25, subset_row=hvg) 
@@ -208,7 +208,7 @@ set.seed(1234)
 
 However, the authors have also provided us with the first 50 PCs used in their study. For consistent with their study, we will use these.
 
-```{r, viewPCA, warning=F}
+```{r, viewPCA, warning=FALSE}
 head(reducedDim(sce, "PCA"))[1:5, 1:5]
 ```
 
