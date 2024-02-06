@@ -43,9 +43,9 @@ knitr::opts_chunk$set(
 Install the package using Bioconductor. Start R and enter:
 
 ```{r, eval = FALSE}
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("MouseAgingData")
+# if(!requireNamespace("BiocManager", quietly = TRUE))
+    # install.packages("BiocManager")
+# BiocManager::install("MouseAgingData")
 ```
 
 # Setup
@@ -53,9 +53,6 @@ BiocManager::install("MouseAgingData")
 Now, load the package and dependencies used in the vignette.
 
 ```{r, message = FALSE}
-library(DropletUtils)
-library(edgeR)
-library(Seurat)
 library(scran)
 library(ggplot2)
 library(SingleCellExperiment)
@@ -87,17 +84,10 @@ multi-well arrays to capture and process individual cells. Unlike droplet-based
 platforms, these cells are manually or automatically sorted into individual
 wells of the plate.
 
-The `MouseAgingData` package provides analysis-ready data resources of different
-aging omics datasets, including the aging mouse brain single cell study
-Ximerakis et al., [2019](https://www.nature.com/articles/s41593-019-0491-3),
-aging mouse brain parabiosis single cell study Ximerakis & Holton et al.,
-[2023](https://pubmed.ncbi.nlm.nih.gov/37118429/). In addition, two relevant
-transcriptomic studies of rejuvenation are also provided: an aging mouse caloric
-restriction single cell study Ma et al.,
-[2020](https://pubmed.ncbi.nlm.nih.gov/32109414/), and an aging mouse exercise
-single cell study Liu et al., [2022](https://pubmed.ncbi.nlm.nih.gov/37080206/).
-The contents of the package can be accessed by querying ExperimentHub with the
-package name.
+The `MouseAgingData` package provides analysis-ready data from an aging mouse
+brain parabiosis single cell study by Ximerakis & Holton et al.,
+[2023](https://pubmed.ncbi.nlm.nih.gov/37118429/). The contents of the package
+can be accessed by querying ExperimentHub with the package name.
 
 
 # Data
@@ -131,7 +121,7 @@ eh <- ExperimentHub()
 query(eh, c("MouseAgingData", "parabiosis10X"))
 
 # Eventually we can load in data through our package, for now:
-sce <- readRDS("~/Desktop/Final_aging_data/parabiosis_sce.rds")
+sce <- readRDS("~/parabiosis_sce.rds")
 sce
 ```
 
@@ -139,7 +129,7 @@ Do some quick QC to make sure the data loaded correctly and is what we expected.
 
 ```{r, Data check}
 
-sce <- readRDS("~/Desktop/Final_aging_data/parabiosis_sce.rds")
+sce <- readRDS("~/parabiosis_sce.rds")
 sce
 
 # Check sce dimensions
@@ -200,11 +190,11 @@ accessed in the  `SingleCellExperiment` object in the `rowData()` slot.
 Below is a method for running a Principal Components Analysis using our
 previously defined HVGs.
 
-```{r, PCA, warning=FALSE}
+```{r, PCA, warning=FALSE, eval=FALSE}
 library(scater)
 set.seed(1234)
-# sce <- runPCA(sce, ncomponents=25, subset_row=hvg) 
-# Add PCA coords to sce object
+sce <- runPCA(sce, ncomponents=25, subset_row=hvg) 
+Add PCA coords to sce object
 ```
 
 However, the authors have also provided us with the first 50 PCs used in their
