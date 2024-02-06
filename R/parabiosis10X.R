@@ -68,7 +68,7 @@ parabiosis10X <- function (metadata = FALSE)
   eh <- query(eh, title)
   ehid <- eh$ah_id
 
-  if (metadata) {
+  if (metadata == TRUE) {
     eh[ehid]
   }
   else eh[[ehid]]
