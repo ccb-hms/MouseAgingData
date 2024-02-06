@@ -2,7 +2,7 @@
 
 ## Data resources across several mouse aging studies
 
-This MouseAgingData package provides analysis-ready data resources from different studies focused on aging and rejuvenation in mice. Studies include a 10X Genomics single-cell data sets from an aging mouse brain parabiosis transcriptomic study containing 105329 cells and 20905 features (Ximerakis & Holton et al., 2023). The data is provided as a SingleCellExperiment R object and includes a table of raw counts and cell metadata.
+This MouseAgingData package provides analysis-ready data resources from different studies focused on aging and rejuvenation in mice. Currently, the package includes a 10X Genomics single-cell data sets from an aging mouse brain parabiosis transcriptomic study containing 105329 cells and 20905 features (Ximerakis & Holton et al., 2023). The data is provided as a SingleCellExperiment R object and includes a table of raw counts and cell metadata.
     
 <br>
 
