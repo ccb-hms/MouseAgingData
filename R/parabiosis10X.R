@@ -3,13 +3,13 @@
 #' Obtain the processed data set for the mouse aging parabiosis 10X Genomics
 #' RNA-seq dataset from Ximerakis & Holton et al. 2023.
 #'
-#' @param metadata Logical, whether only metadata should be returned
+#' @param metadata Logical, whether only experiment metadata should be returned.
 #' Default behavior is to return processed data with metadata included.
 #'
 #' @format SingleCellExperiment
 #'
 #' @return
-#' Returns a SingleCellExperiment object.
+#' Returns a [SingleCellExperiment()] object.
 #'
 #' @details
 #' This function downloads the data for the mouse aging parabiosis study from

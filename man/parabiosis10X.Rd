@@ -10,11 +10,11 @@ SingleCellExperiment
 parabiosis10X(metadata = FALSE)
 }
 \arguments{
-\item{metadata}{Logical, whether only metadata should be returned
+\item{metadata}{Logical, whether only experiment metadata should be returned.
 Default behavior is to return processed data with metadata included.}
 }
 \value{
-Returns a SingleCellExperiment object.
+Returns a \code{\link[=SingleCellExperiment]{SingleCellExperiment()}} object.
 }
 \description{
 Obtain the processed data set for the mouse aging parabiosis 10X Genomics
