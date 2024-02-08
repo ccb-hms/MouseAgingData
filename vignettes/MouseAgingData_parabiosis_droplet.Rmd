@@ -6,6 +6,8 @@ author:
       email: Tram_Nguyen@hms.harvard.edu
     - name: Kris Holton
       affiliation: Harvard Stem Cell Institute, Harvard Medical School
+    - name: Nitesh Turaga
+      affiliation: Center for Computational Biomedicine, Harvard Medical School
     - name: Tyrone Lee
       affiliation: Center for Computational Biomedicine, Harvard Medical School
     - name: Ludwig Geistlinger
