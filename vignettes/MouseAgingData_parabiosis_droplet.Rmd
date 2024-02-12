@@ -56,9 +56,12 @@ Now, load the package and dependencies used in the vignette.
 
 ```{r, message = FALSE}
 library(scran)
+library(scater)
 library(ggplot2)
+library(bluster)
 library(SingleCellExperiment)
 library(ExperimentHub)
+library(MouseAgingData)
 ```
 
 # Introduction
@@ -116,24 +119,16 @@ includes 105,329 cells, 31 cell types across 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY
 animals, and 20905 features
 
 
-# Load the data set
+# Load the data set from ExperimentHub
 
-```{r, eval = FALSE}
-eh <- ExperimentHub()
-query(eh, c("MouseAgingData", "parabiosis10X"))
-
-# Eventually we can load in data through our package, for now:
-sce <- readRDS("~/parabiosis_sce.rds")
+```{r}
+sce <- parabiosis10X()
 sce
 ```
 
 Do some quick QC to make sure the data loaded correctly and is what we expected.
 
 ```{r, Data check}
-
-sce <- readRDS("~/parabiosis_sce.rds")
-sce
-
 # Check sce dimensions
 dim(sce)
 
@@ -158,17 +153,24 @@ Bioconductor
 book](https://bioconductor.org/books/3.15/OSCA.basic/quality-control.html) also
 provides several examples of quality control steps as well.
 
+
+For the purposes of demonstration, we'll subset this `SingleCellExperiment`
+object down to 1000 cells.
+
+```{r}
+sce_subset <- sce[, 1:1000]
+```
+
+
 # Normalization
 
 ```{r, normalize}
-library(scran)
 set.seed(101000110)
-clusters <- quickCluster(sce)
-sce <- computeSumFactors(sce, clusters=clusters)
-sce <- logNormCounts(sce)
+clusters <- quickCluster(sce_subset)
+sce_subset <- computeSumFactors(sce_subset, clusters=clusters)
+sce_subset <- logNormCounts(sce_subset)
 
-
-head(logcounts(sce))
+head(logcounts(sce_subset))
 ```
 
 # Feature selection
@@ -178,8 +180,7 @@ variable genes (HVGs), say the top 10% of genes with the highest variability in
 expression. Below is an example of how to do this.
 
 ```{r, feat select}
-library(scran)
-dec <- modelGeneVar(sce)
+dec <- modelGeneVar(sce_subset)
 hvg <- getTopHVGs(dec, prop=0.1)
 ```
 
@@ -193,24 +194,22 @@ Below is a method for running a Principal Components Analysis using our
 previously defined HVGs.
 
 ```{r, PCA, warning=FALSE, eval=FALSE}
-library(scater)
 set.seed(1234)
-sce <- runPCA(sce, ncomponents=25, subset_row=hvg) 
-Add PCA coords to sce object
+sce_subset <- runPCA(sce_subset, ncomponents=25, subset_row=hvg) 
+# Add PCA coords to sce object
 ```
 
 However, the authors have also provided us with the first 50 PCs used in their
 study. For consistent with their study, we will use these.
 
 ```{r, viewPCA, warning=FALSE}
-head(reducedDim(sce, "PCA"))[1:5, 1:5]
+head(reducedDim(sce_subset, "PCA"))[1:5, 1:5]
 ```
 
 # Clustering
 
 ```{r, clustering}
-library(bluster)
-colLabels(sce) <- clusterCells(sce, use.dimred='PCA',
+colLabels(sce_subset) <- clusterCells(sce_subset, use.dimred='PCA',
                                BLUSPARAM=NNGraphParam(cluster.fun="louvain"))
 ```
 
@@ -223,10 +222,9 @@ their paper. This can be accessed in the metadata slot of the
 
 ```{r provided umap, fig.height = 4, fig.width = 6.5}
 # Generate color map matching cell type to colors in publication
-cell.color <- metadata(sce)$cell_color
+cell.color <- metadata(sce_subset)$cell_color
 
-library(scater)
-gg <- plotUMAP(sce, color_by = "cell_type", text_by = "cell_type") 
+gg <- plotUMAP(sce_subset, color_by = "cell_type", text_by = "cell_type") 
 gg + theme(legend.title=element_blank()) + 
     scale_color_manual(values=c(cell.color))
 ```
@@ -274,7 +272,7 @@ set.seed(00101001101)
 # runTSNE() stores the t-SNE coordinates in the reducedDims
 sce <- runTSNE(sce, dimred = 'PCA', name = "osca_TSNE")
 
-gg <- plotReducedDim(sce, dimred = "osca_TSNE", color_by = "cell_type", 
+gg <- scater::plotReducedDim(sce, dimred = "osca_TSNE", color_by = "cell_type", 
                      text_by = "cell_type") 
 gg + theme(legend.title=element_blank()) + 
     scale_color_manual(values=c(cell.color))
