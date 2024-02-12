@@ -20,7 +20,7 @@ Parabiosis10X <- data.frame(
     Maintainer = "Tram Nguyen <Tram_Nguyen@hms.harvard.edu>",
     RDataClass = "SingleCellExperiment",
     DispatchClass = "RDS",
-    RDataPath = "MouseAgingData/parabiosis_sce.RDS",
+    RDataPath = "MouseAgingData/parabiosis_sce.rds",
     stringsAsFactors = FALSE
 )
 

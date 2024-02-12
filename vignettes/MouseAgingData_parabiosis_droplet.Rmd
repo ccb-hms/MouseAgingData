@@ -1,5 +1,5 @@
 ---
-title: "Import and representation of parabiosis droplet data"
+title: "Importation and representation of parabiosis droplet data"
 author: 
     - name: Tram Nguyen
       affiliation: Center for Computational Biomedicine, Harvard Medical School
@@ -72,18 +72,18 @@ heterogeneous sample. Single-cell sequencing can provide insights into various
 aspects of cellular biology, such as characterization of cell populations,
 identification of rare cell types, and quantification of expression levels in
 cell types across experimental treatments. Given the wide utility, single-cell
-sequencing has expanded scientific knowledge various fields, including cancer
+sequencing has expanded scientific knowledge in various fields, including cancer
 research, immunology, developmental biology, neurobiology, and microbiology.
 
 There are several methods for generating single-cell sequencing data which can
-extract either the DNA (scDNA-seq) or RNA (scRNA-seq) of a cell. These include,
-but are not limited to:
+extract information (DNA or RNA) from a cell. These include, but are not limited
+to:
 
-1. Droplet-based platforms such as 10x Genomics Chromium system, inDrop,
+1. Droplet-based platforms: such as 10x Genomics Chromium system, inDrop,
 Drop-seq, and Seq-Well, which use microfluidic devices to isolate individual
 cells into tiny droplets along with unique barcoded beads.
 
-2. Plate or microwell-based methods such as the Smart-seq2 protocol or the C1
+2. Plate or microwell-based methods: such as the Smart-seq2 protocol or the C1
 system by Fluidigm, respectively. These platforms employ microfluidic chips or
 multi-well arrays to capture and process individual cells. Unlike droplet-based
 platforms, these cells are manually or automatically sorted into individual
@@ -91,56 +91,56 @@ wells of the plate.
 
 The `MouseAgingData` package provides analysis-ready data from an aging mouse
 brain parabiosis single cell study by Ximerakis & Holton et al.,
-[2023](https://pubmed.ncbi.nlm.nih.gov/37118429/). The contents of the package
+([2023](https://pubmed.ncbi.nlm.nih.gov/37118429/)). The contents of the package
 can be accessed by querying ExperimentHub with the package name.
 
 
 # Data
 
-This vignette performs a simple analysis of the parabiosis 10X Genomics
-single-cell data set from Ximerakis & Holton et al.
-([2023](https://www.nature.com/articles/s43587-023-00373-6)). The analysis
-follows the Basics of Single-Cell Analysis in the [OSCA Bioconductor book Quick
-Start
-Workflow](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple).
-In this study, the authors investigated how heterochronic parabiosis affects the
-mouse brain in terms of aging and rejuvenation. They identified gene signatures
-attributed to aging in specific cell-types. They focus especially on brain
-endothelial cells, which showed dynamic transcriptional changes that affect
-vascular structure and function.
-
-This vignette walks through the process of quality control, normalization,
-various forms of dimensionality reduction, clustering, detection of marker
-genes, and annotation of cell types. PCA, UMAP, and tSNE coordinates used in the
-study were provided b the authors for visualization.
+Ximerakis & Holton et al. investigated how heterochronic parabiosis (joining of
+the circulatory systems) affects the mouse brain in terms of aging and
+rejuvenation. They identified gene signatures attributed to aging in specific
+cell-types. They focus especially on brain endothelial cells, which showed
+dynamic transcriptional changes that affect vascular structure and function.
 
 The parabiosis single cell RNA-seq (Ximerakis, Holton et al Nature Aging 2023)
 includes 105,329 cells, 31 cell types across 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY
-animals, and 20905 features
+animals, and 20905 features.
+
+This vignette performs a simple analysis of the parabiosis 10X Genomics
+single-cell data set, following the Quick Start Workflow of Single-Cell Analysis
+in the [OSCA Bioconductor Book](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple). 
+
+Briefly, it walks through the process of quality control, normalization, various
+forms of dimensionality reduction, clustering, detection of marker genes, and
+annotation of cell types. PCA, UMAP, and tSNE coordinates used in the study were
+provided by the authors for visualization.
 
 
 # Load the data set from ExperimentHub
 
 ```{r}
 sce <- parabiosis10X()
+```
+
+```{r}
+# View the data
 sce
 ```
 
-Do some quick QC to make sure the data loaded correctly and is what we expected.
+Do some checking to make sure the data loaded correctly and is what we expected.
 
 ```{r, Data check}
-# Check sce dimensions
-dim(sce)
-
 # Sample metadata
 head(colData(sce)) 
+```
 
+
+```{r}
 # Includes cell colors from the original paper
 metadata(sce)
-
-# The count matrix. Transcript for each gene per cell (column)
-head(counts(sce)) 
 ```
+
 
 # Quality control
 
@@ -154,15 +154,14 @@ book](https://bioconductor.org/books/3.15/OSCA.basic/quality-control.html) also
 provides several examples of quality control steps as well.
 
 
-For the purposes of demonstration, we'll subset this `SingleCellExperiment`
-object down to 1000 cells.
+# Normalization
 
-```{r}
+Normalize the expression counts. For the purposes of demonstration, we'll subset
+this `SingleCellExperiment` object down to the first 1000 cells.
+
+```{r, subset sce}
 sce_subset <- sce[, 1:1000]
 ```
-
-
-# Normalization
 
 ```{r, normalize}
 set.seed(101000110)
@@ -170,70 +169,98 @@ clusters <- quickCluster(sce_subset)
 sce_subset <- computeSumFactors(sce_subset, clusters=clusters)
 sce_subset <- logNormCounts(sce_subset)
 
-head(logcounts(sce_subset))
+logcounts(sce_subset)[1:10, 1:10]
 ```
 
 # Feature selection
 
-At this point a typical workflow, we could select an appropriate set of highly
-variable genes (HVGs), say the top 10% of genes with the highest variability in
-expression. Below is an example of how to do this.
+At this point in a typical workflow, we could select an appropriate set of
+highly variable genes (HVGs), say the top 10% of genes with the highest
+variability in expression. Below is an example of how to do this with our
+subsetted `SingleCellExperiment` example.
 
 ```{r, feat select}
 dec <- modelGeneVar(sce_subset)
 hvg <- getTopHVGs(dec, prop=0.1)
 ```
 
-A logical index showing the 2000 HVG included in the original study can also be
-accessed in the  `SingleCellExperiment` object in the `rowData()` slot.
+<br>
+
+However, a logical index showing the 2000 HVG included in the original study
+conducted by the authors can also be accessed in the original
+`SingleCellExperiment` object in the `rowData()` slot.
+
+```{r}
+head(rowData(sce))
+```
 
 
 # PCA
 
 Below is a method for running a Principal Components Analysis using our
-previously defined HVGs.
+previously defined HVGs. Since this step can take a significant amount of time
+to compute, we will again just apply it to our subset of 1000 cells as
+demonstration.
 
-```{r, PCA, warning=FALSE, eval=FALSE}
+```{r, PCA, warning=FALSE}
+# Since we already have PCA coords from our authors, we will add these computed 
+# PCA coords under a different name "osca_PCA"
+
 set.seed(1234)
-sce_subset <- runPCA(sce_subset, ncomponents=25, subset_row=hvg) 
-# Add PCA coords to sce object
-```
+sce_subset <- runPCA(sce_subset, ncomponents=25, subset_row=hvg, 
+                     name = "osca_PCA")
 
-However, the authors have also provided us with the first 50 PCs used in their
-study. For consistent with their study, we will use these.
+
+# Show the names of the elements in the ReducedDims slot
+reducedDims(sce_subset)
+```
+<br>
+
+As mentioned, the authors have also provided us with the first 50 PCs used in
+their study within the full `SingleCellExperiment` object. Let's take a look.
 
 ```{r, viewPCA, warning=FALSE}
-head(reducedDim(sce_subset, "PCA"))[1:5, 1:5]
+reducedDim(sce_subset, "PCA")[1:5, 1:5]
 ```
 
 # Clustering
 
+At this point, we could take the PCs that were previously computed and do some
+clustering of cells based on expression profiles. More details are provided in
+the OSCA book
+[here](https://bioconductor.org/books/3.14/OSCA.basic/clustering.html). Let's do
+some clustering with our subsetted object as an example.
+
 ```{r, clustering}
-colLabels(sce_subset) <- clusterCells(sce_subset, use.dimred='PCA',
+colLabels(sce_subset) <- clusterCells(sce_subset, use.dimred='osca_PCA',
                                BLUSPARAM=NNGraphParam(cluster.fun="louvain"))
 ```
+
 
 # Visualization
 
 For this dataset, the authors have already provided us with their exact UMAP and
-TSNE coordinates, as well as their color scheme representing the cell types from
+tSNE coordinates, as well as their color scheme representing the cell types from
 their paper. This can be accessed in the metadata slot of the
-`SingleCellExperiment` object with the `metadata()` function.
+`SingleCellExperiment` object with the `metadata()` function. To consistently
+recreate their figures, let's plot using their provided coordinates.
 
-```{r provided umap, fig.height = 4, fig.width = 6.5}
+```{r, fig.height = 4, fig.width = 6.5}
+
 # Generate color map matching cell type to colors in publication
-cell.color <- metadata(sce_subset)$cell_color
+cell.color <- metadata(sce)$cell_color
 
-gg <- plotUMAP(sce_subset, color_by = "cell_type", text_by = "cell_type") 
+gg <- plotUMAP(sce, color_by = "cell_type", text_by = "cell_type") 
 gg + theme(legend.title=element_blank()) + 
     scale_color_manual(values=c(cell.color))
 ```
-
 This plot is a recreation of Fig. 2C from Ximerakis & Holton et al. 2023.
 
-We can also plot a TSNE with their provided coordinates.
+<br>
 
-```{r, plot provided TSNE, fig.height = 4, fig.width = 6.5}
+We can also plot a tSNE with their provided coordinates.
+
+```{r, plot provided tSNE, fig.height = 4, fig.width = 6.5}
 gg <- plotTSNE(sce, color_by = "cell_type", text_by = "cell_type") 
 gg + theme(legend.title=element_blank()) + 
     scale_color_manual(values=c(cell.color))
@@ -241,42 +268,9 @@ gg + theme(legend.title=element_blank()) +
 
 <br>
 
-If you would like to create your own UMAP and TSNE plots, please refer back to
+If you would like to create your own UMAP and tSNE plots, please refer back to
 the [OSCA Bioconductor book](https://bioconductor.org/books/3.15/OSCA.basic/)
-and save our own coordinates to the `SingleCellExperiment` object. Below is some
-example code to achieve this.
-
-Start with a UMAP.
-
-```{r, UMAP2, fig.height = 4, fig.width = 6.5}
-# Add our UMAP to the reducedDims slot with the name "osca_UMAP" so we do not
-# confused it with the author's UMAP coords.
-sce <- runUMAP(sce, dimred = 'PCA', name = "osca_UMAP")
-
-# When we want to access a specific item (here, "osca_UMAP") in the reducedDims
-# element of the SingleCellExperiment object, we can use the function
-# plotReducedDim with the argument dimred.
-
-gg <- plotReducedDim(sce, dimred = "osca_UMAP", color_by = "cell_type", 
-                     text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + 
-    scale_color_manual(values=c(cell.color))
-```
-
-Now with a TSNE.
-
-```{r, TSNE2, fig.height = 4, fig.width = 6.5}
-# Run TSNE
-set.seed(00101001101)
-
-# runTSNE() stores the t-SNE coordinates in the reducedDims
-sce <- runTSNE(sce, dimred = 'PCA', name = "osca_TSNE")
-
-gg <- scater::plotReducedDim(sce, dimred = "osca_TSNE", color_by = "cell_type", 
-                     text_by = "cell_type") 
-gg + theme(legend.title=element_blank()) + 
-    scale_color_manual(values=c(cell.color))
-```
+for more details.
 
 # Reference
 
