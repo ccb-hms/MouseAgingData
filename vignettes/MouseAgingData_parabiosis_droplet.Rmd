@@ -25,7 +25,7 @@ output:
 date: "`r doc_date()`"
 vignette: >
     % \VignetteIndexEntry{parabiosis droplet}
-    %\VignetteEncoding{UTF-8}
+    % \VignetteEncoding{UTF-8}
     % \VignetteEngine{knitr::rmarkdown}
 editor_options: 
     markdown: 
