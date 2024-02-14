@@ -2,7 +2,7 @@
 
 ## Data resources across several mouse aging studies
 
-The MouseAgingData package provides analysis-ready data resources from different studies focused on aging and rejuvenation in mice. Currently, the package includes a 10x Genomics single-cell RNA-seq data set from an aging mouse brain parabiosis transcriptomic study on 105,329 cells measured across 20,905 features ([Ximerakis & Holton et al., 2023](https://doi.org/10.1038/s43587-023-00373-6])). The data is provided as a [SingleCellExperiment](https://bioconductor.org/packages/SingleCellExperiment) R object and includes a table of raw counts and cell metadata.
+The MouseAgingData package provides analysis-ready data resources from different single-cell studies focused on aging and rejuvenation in mice. Currently, the package includes a 10x Genomics single-cell RNA-seq data set from a parabiosis aging mouse brain study measuring 20,905 gene features across 105,329 cells ([Ximerakis & Holton et al., 2023](https://doi.org/10.1038/s43587-023-00373-6])). The data is provided as a [SingleCellExperiment](https://bioconductor.org/packages/SingleCellExperiment) R object and includes a table of raw UMI counts and cell metadata.
     
 <br>
 
@@ -50,7 +50,7 @@ library(MouseAgingData)
 
 This package contains the processed 10x Genomics single-cell RNA-seq data from 
 ([Ximerakis & Holton et al., 2023](https://www.nature.com/articles/s43587-023-00373-6)).
-Quality and preprocessing were carried out as described in the Methods section of the paper. 
+Quality control and preprocessing were carried out as described in the Methods section of the paper. 
 The processed dataset contains 
 105,329 cells and 20,905 features for 31 cell types. Low quality cells and 
 animals were removed following the paper's methods resulting in 8 OX, 8 YX, 
