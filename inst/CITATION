@@ -7,7 +7,7 @@ pkgVer <- function(pkg) {
 c(
 
     bibentry(bibtype="manual",
-        title = "",
+        title = "MouseAgingData",
         author = personList(
             as.person("Nguyen, Tram")
         ),
@@ -15,15 +15,5 @@ c(
         url = "http://www.bioconductor.org/packages/MouseAgingData",
         note = pkgVer('MouseAgingData'),
         doi = '10.18129/B9.bioc.MouseAgingData'
-    ),
-    bibentry(bibtype="article",
-        title = "",
-        author = personList(
-            as.person("ccb-hms")
-        ),
-        year = format(Sys.Date(), "%Y"),
-        journal = "bioRxiv",
-        doi = "10.1101/TODO",
-        url = "https://www.biorxiv.org/content/10.1101/TODO"
     )
 )
