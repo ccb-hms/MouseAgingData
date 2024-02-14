@@ -24,9 +24,9 @@ output:
       code_folding: show
 date: "`r doc_date()`"
 vignette: >
-    % \VignetteIndexEntry{parabiosis droplet}
-    % \VignetteEncoding{UTF-8}
-    % \VignetteEngine{knitr::rmarkdown}
+    %\VignetteIndexEntry{parabiosis droplet}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
     markdown: 
       wrap: 80
