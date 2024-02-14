@@ -1,0 +1,29 @@
+pkgVer <- function(pkg) {
+    if (!exists("meta") || is.null(meta)) meta <- packageDescription(pkg)
+    ver <- meta$Version
+    paste0('https://github.com/ccb-hms/MouseAgingData/', pkg, ' - R package version ', ver)
+}
+
+c(
+
+    bibentry(bibtype="manual",
+        title = "",
+        author = personList(
+            as.person("Nguyen, Tram")
+        ),
+        year = format(Sys.Date(), "%Y"),
+        url = "http://www.bioconductor.org/packages/MouseAgingData",
+        note = pkgVer('MouseAgingData'),
+        doi = '10.18129/B9.bioc.MouseAgingData'
+    ),
+    bibentry(bibtype="article",
+        title = "",
+        author = personList(
+            as.person("ccb-hms")
+        ),
+        year = format(Sys.Date(), "%Y"),
+        journal = "bioRxiv",
+        doi = "10.1101/TODO",
+        url = "https://www.biorxiv.org/content/10.1101/TODO"
+    )
+)
