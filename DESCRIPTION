@@ -1,7 +1,7 @@
 Package: MouseAgingData
 Title: Multi-omics data access for studies investigating the effects of
     aging
-Version: 0.99.5
+Version: 0.99.6
 Authors@R: 
     person("Tram", "Nguyen", , "Tram_Nguyen@hms.harvard.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-4809-6227"))
@@ -18,10 +18,7 @@ BugReports: https://github.com/ccb-hms/MouseAgingData/issues
 Depends:
     R (>= 4.4.0)
 Imports: 
-    BiocGenerics,
     ExperimentHub,
-    methods,
-    S4Vectors,
     SingleCellExperiment
 Suggests: 
     BiocStyle,
