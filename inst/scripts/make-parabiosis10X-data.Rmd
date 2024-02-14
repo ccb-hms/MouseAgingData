@@ -93,7 +93,7 @@ metadata(sce)$Samples <- NULL
 
 # Rename column names of metadata
 names(colData(sce))[which(names(colData(sce)) =="animal_name")] <- 
-  "parabiosis_category"
+  "animal_type"
 names(colData(sce))[which(names(colData(sce)) =="percent.mito")] <- 
   "percent_mito"
 names(colData(sce))[which(names(colData(sce)) =="percent.ribo")] <- 
