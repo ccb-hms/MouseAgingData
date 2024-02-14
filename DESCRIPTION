@@ -16,13 +16,13 @@ License: Artistic-2.0
 URL: https://github.com/ccb-hms/MouseAgingData
 BugReports: https://github.com/ccb-hms/MouseAgingData/issues
 Depends:
-    ExperimentHub,
-    R,
-    SingleCellExperiment
+    R (>= 4.4.0)
 Imports: 
     BiocGenerics,
+    ExperimentHub,
     methods,
-    S4Vectors
+    S4Vectors,
+    SingleCellExperiment
 Suggests: 
     BiocStyle,
     bluster,
