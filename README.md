@@ -2,7 +2,7 @@
 
 ## Data resources across several mouse aging studies
 
-This MouseAgingData package provides analysis-ready data resources from different studies focused on aging and rejuvenation in mice. Currently, the package includes a 10X Genomics single-cell data sets from an aging mouse brain parabiosis transcriptomic study containing 105329 cells and 20905 features (Ximerakis & Holton et al., 2023). The data is provided as a SingleCellExperiment R object and includes a table of raw counts and cell metadata.
+The MouseAgingData package provides analysis-ready data resources from different studies focused on aging and rejuvenation in mice. Currently, the package includes a 10x Genomics single-cell RNA-seq data set from an aging mouse brain parabiosis transcriptomic study on 105,329 cells measured across 20,905 features ([Ximerakis & Holton et al., 2023](https://doi.org/10.1038/s43587-023-00373-6])). The data is provided as a [SingleCellExperiment](https://bioconductor.org/packages/SingleCellExperiment) R object and includes a table of raw counts and cell metadata.
     
 <br>
 
@@ -46,16 +46,19 @@ library(MouseAgingData)
 
 ## Datasets
 
-#### 1. Ximerakis & Holton et al. 2023 Parabiosis 10X Genomics Single-Cell Data
+#### 1. Ximerakis & Holton et al. 2023 Parabiosis 10x Genomics Single-cell RNA-seq data
 
-This package contains the processed 10X Genomics data from Ximerakis & Holton et al. ([2023](https://www.nature.com/articles/s43587-023-00373-6)) prepared based on the protocol detailed in their paper. The processed dataset contains 
-105,329 cells and 20905 features for 31 cell types. Low quality cells and 
+This package contains the processed 10x Genomics single-cell RNA-seq data from 
+([Ximerakis & Holton et al., 2023](https://www.nature.com/articles/s43587-023-00373-6)).
+Quality and preprocessing were carried out as described in the Methods section of the paper. 
+The processed dataset contains 
+105,329 cells and 20,905 features for 31 cell types. Low quality cells and 
 animals were removed following the paper's methods resulting in 8 OX, 8 YX, 
 7 YY, 9 YO, 7 OO, 11 OY animals.
 
 This package includes gene counts, cell annotation, and reduced-dimension 
-representations as separate components of the processed data, and also as a 
-stored `SingleCellExperiment` object.
+representations as separate components of the processed data, that are served
+in an integrated `SingleCellExperiment` object.
 
 <br>
 
