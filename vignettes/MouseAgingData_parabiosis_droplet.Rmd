@@ -245,7 +245,7 @@ their paper. This can be accessed in the metadata slot of the
 `SingleCellExperiment` object with the `metadata()` function. To consistently
 recreate their figures, let's plot using their provided coordinates.
 
-```{r, fig.height = 4, fig.width = 6.5}
+```{r, fig.wide=TRUE}
 
 # Generate color map matching cell type to colors in publication
 cell.color <- metadata(sce)$cell_color
@@ -260,7 +260,7 @@ This plot is a recreation of Fig. 2C from Ximerakis & Holton et al. 2023.
 
 We can also plot a tSNE with their provided coordinates.
 
-```{r, plot provided tSNE, fig.height = 4, fig.width = 6.5}
+```{r, plot provided tSNE, fig.wide=TRUE}
 gg <- plotTSNE(sce, color_by = "cell_type", text_by = "cell_type") 
 gg + theme(legend.title=element_blank()) + 
     scale_color_manual(values=c(cell.color))
