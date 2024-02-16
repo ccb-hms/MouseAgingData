@@ -1,6 +1,6 @@
 #' Load mouse aging parabiosis data
 #'
-#' Obtain the processed data set for the mouse aging parabiosis 10X Genomics
+#' Obtain the processed data set for the mouse aging parabiosis 10x Genomics
 #' RNA-seq dataset from Ximerakis & Holton et al. 2023.
 #'
 #' @param metadata Logical, whether only experiment metadata should be returned.
@@ -54,13 +54,13 @@
 #' \emph{Nat Aging} 3, 327–345. DOI:https://doi.org/10.1038/s43587-023-00373-6.
 #'
 #' @examples
-#' data <- parabiosis10X()
-#' data_meta <- parabiosis10X(metadata = TRUE)
+#' data <- parabiosis10x()
+#' data_meta <- parabiosis10x(metadata = TRUE)
 #'
 #' @export
 #' @import ExperimentHub
 #' @importFrom SingleCellExperiment SingleCellExperiment
-parabiosis10X <- function (metadata = FALSE)
+parabiosis10x <- function (metadata = FALSE)
 {
   eh <- ExperimentHub()
   title <- "Parabiosis10X"

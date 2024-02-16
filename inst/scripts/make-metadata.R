@@ -4,9 +4,9 @@
 ###
 
 # Parabiosis10X
-Parabiosis10X <- data.frame(
+Parabiosis10x <- data.frame(
     Title = "Parabiosis10X",
-    Description = paste0("10X Genomics processed single-cell dataset ",
+    Description = paste0("10x Genomics processed single-cell dataset ",
                          "from Ximerakis & Holton et al. 2023"),
     BiocVersion = "3.19",
     Genome = "mm10",
@@ -26,7 +26,7 @@ Parabiosis10X <- data.frame(
 
 # Combined meta-data
 df_all <- base::rbind(
-    Parabiosis10X
+    Parabiosis10x
 )
 
 # Save .csv file

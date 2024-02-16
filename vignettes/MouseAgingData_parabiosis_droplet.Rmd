@@ -120,7 +120,7 @@ provided by the authors for visualization.
 # Load the data set from ExperimentHub
 
 ```{r}
-sce <- parabiosis10X()
+sce <- parabiosis10x()
 ```
 
 ```{r}

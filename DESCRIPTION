@@ -7,7 +7,7 @@ Authors@R:
            comment = c(ORCID = "0000-0003-4809-6227"))
 Description: This MouseAgingData package provides analysis-ready data
     resources from different studies focused on aging and rejuvenation in
-    mice. The package currently includes a 10X Genomics single-cell data
+    mice. The package currently includes a 10x Genomics single-cell data
     sets from an aging mouse brain parabiosis transcriptomic study
     containing 105329 cells and 20905 features (Ximerakis & Holton et al.,
     2023). The data is provided as a SingleCellExperiment R object and

@@ -1,5 +1,5 @@
 ---
-title: "Preparing the Parabiosis 10X droplet dataset for ExperimentHub"
+title: "Preparing the Parabiosis 10x droplet dataset for ExperimentHub"
 author: "Tram Nguyen"
 date: "`r Sys.Date()`"
 output: html_document
