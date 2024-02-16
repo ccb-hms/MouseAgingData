@@ -107,7 +107,7 @@ The parabiosis single cell RNA-seq (Ximerakis, Holton et al Nature Aging 2023)
 includes 105,329 cells, 31 cell types across 8 OX, 8 YX, 7 YY, 9 YO, 7 OO, 11 OY
 animals, and 20905 features.
 
-This vignette performs a simple analysis of the parabiosis 10X Genomics
+This vignette performs a simple analysis of the parabiosis 10x Genomics
 single-cell data set, following the Quick Start Workflow of Single-Cell Analysis
 in the [OSCA Bioconductor Book](https://bioconductor.org/books/3.15/OSCA.intro/analysis-overview.html#quick-start-simple). 
 
