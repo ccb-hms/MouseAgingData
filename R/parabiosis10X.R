@@ -62,14 +62,14 @@
 #' @importFrom SingleCellExperiment SingleCellExperiment
 parabiosis10x <- function (metadata = FALSE)
 {
-  eh <- ExperimentHub()
-  title <- "Parabiosis10X"
-
-  eh <- query(eh, title)
-  ehid <- eh$ah_id
-
-  if (metadata == TRUE) {
-    eh[ehid]
-  }
-  else eh[[ehid]]
+    eh <- ExperimentHub()
+    title <- "Parabiosis10X"
+    
+    eh <- query(eh, title)
+    ehid <- eh$ah_id
+    
+    if (metadata == TRUE) {
+        eh[ehid]
+    }
+    else eh[[ehid]]
 }
