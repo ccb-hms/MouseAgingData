@@ -2,8 +2,8 @@ Package: MouseAgingData
 Title: Multi-omics data access for studies investigating the effects of
     aging
 Version: 0.99.10
-Authors@R:
-    person(c("Tram", "Nguyen", "Tram_Nguyen@hms.harvard.edu", 
+Authors@R:c(
+    person("Tram", "Nguyen", "Tram_Nguyen@hms.harvard.edu", 
             role = c("aut", "cre"),
             comment = c(ORCID = "0000-0003-4809-6227")),
     person("Kris", "Holton", 
