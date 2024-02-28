@@ -58,14 +58,13 @@
 #' data_meta <- parabiosis10x(metadata = TRUE)
 #'
 #' @export
-#' @import ExperimentHub
 #' @importFrom SingleCellExperiment SingleCellExperiment
 parabiosis10x <- function (metadata = FALSE)
 {
-    eh <- ExperimentHub()
+    eh <- ExperimentHub::ExperimentHub()
     title <- "Parabiosis10X"
     
-    eh <- query(eh, title)
+    eh <- AnnotationHub::query(eh, title)
     ehid <- eh$ah_id
     
     if (metadata == TRUE) {
