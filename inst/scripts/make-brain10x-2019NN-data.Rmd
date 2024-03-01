@@ -71,7 +71,9 @@ courtesy of the authors.
 s_sce<-as.SingleCellExperiment(s2, assay="RNA")
 
 # Format cell metadata
-s_sce$orig.ident<-NULL
+s_sce$orig.ident <- NULL
+s_sce$ident <- NULL
+
 cols <- c("animal", "batch", "animal_type", "cell_type")
 colData(s_sce)[cols] <- lapply(colData(s_sce)[cols], factor)
 
@@ -81,11 +83,12 @@ metadata(s_sce)$cell_colors<-s2@misc$colours
 # Format reduced dim elements
 reducedDims(s_sce) <- reducedDims(s_sce)[c("PCA","TSNE")]
 colnames(reducedDim(s_sce, "TSNE")) <- c("TSNE1", "TSNE2")
-colnames(reducedDim(s_sce, "PCA")) <-  sub("_", "", colnames(reducedDim(s_sce, "PCA")))
+colnames(reducedDim(s_sce, "PCA")) <- sub("_", "", 
+                                          colnames(reducedDim(s_sce, "PCA")))
 
 # Format row and column data
 colnames(s_sce) <- NULL
-rowData(s_sce) <- NULL
+rowData(s_sce)$geneID <- rownames(s_sce)
 
 # Retain only raw counts
 s_sce@assays@data@listData$logcounts <- NULL
@@ -100,7 +103,9 @@ saveRDS(s_sce, "brain10x_2019NN.rds")
 
 # References
 
-Ximerakis, M., Lipnick, S.L., Innes, B.T. et al. Single-cell transcriptomic profiling of the aging mouse brain. *Nat Neurosci* 22, 1696–1708 (2019). <DOI:https://doi.org/10.1038/s41593-019-0491-3>.
+Ximerakis, M., Lipnick, S.L., Innes, B.T. et al. Single-cell transcriptomic
+profiling of the aging mouse brain. *Nat Neurosci* 22, 1696–1708 (2019).
+<DOI:https://doi.org/10.1038/s41593-019-0491-3>.
 
 # Session info
 
