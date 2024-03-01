@@ -1,0 +1,86 @@
+---
+title: "Preparing Ximerakis 2019NN brain 10x droplet dataset for ExperimentHub"
+author: "Tram Nguyen"
+date: "2024-03-01"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(width = 80)
+```
+
+# Data pre-processing
+
+Basic processing of the 10x Genomics scRNA-seq data was already
+performed with the Seurat package (v.2.3) in R (v.3.3.4) to remove
+low-quality cells and identify cell clusters following the detailed
+methods described in Ximerakis et al.
+[(2019)](https://www.nature.com/articles/s41593-019-0491-3#Sec12).
+
+Briefly, the data were log normalized and scaled to 10,000 transcripts
+per cell and highly variable genes were identified with the
+FindVariableGenes() function. Next, principal component analysis (PCA)
+was carried out, and the top 20 principal components (PCs) were stored.
+Clusters were identified with the FindClusters() function with the
+shared nearest neighbor method. All clusters with only one cell were
+removed, resulting in 40 initial clusters.
+
+For initial quality-control (QC) filtering, the authors removed any
+clusters where the majority of cells had greater than 30%
+mitochondrial RNA, under 1,000 detected transcripts, or under 500 unique
+genes. Additionally, they filtered the remaining individual cells with
+the following parameters: minimum percentage mito = 0, maximum
+percentage mito = 30%, minimum number of UMI = 200, maximum number of
+UMIs = 30,000, minimum number of nGene = 250, and maximum number of
+nGene = 6,000 to exclude outliers. Finally, any genes that were
+detected in fewer than 3 cells were excluded. After initial QC, a total of 38,244 cells and 14,699 genes were retained.
+
+The final round of QC filtering removed likely doublet artifacts arising from
+the co-capture of multiple cells in one droplet. Using the top differential
+markers the authors searched for identified cluster/sub-cluster using the
+FindMarkers() function. Doublets/multiplets were defined as any cluster in
+which >30% of its cells were expressed in at least 5 of the top 10 genes
+specific for the initially identified cell type and also any other cell type it was associated with. These clusters were removed from downstream analysis.
+Furthermore, cell clusters that were not represented by at least half of the
+young and old animals were also excluded. For example, although epithelial cells (Epcam+/Krt18+) were detected in the dataset, they were detected only in two of the eight young animals but none of the old animals, and were therefore excluded in the dataset. After exclusions, clustering was again performed.
+The final dataset includes the transcriptomes derived from the brains of
+8 young (2–3 months) and 8 old (21–23 months) mice, and includes 37,089 cells representing 25 cell types and 14699 features. 
+
+
+# Download processed data
+
+The raw, unprocessed data for the 16 mice samples are available for download through GEO accession number [GSE129788](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE12978).
+
+UMAP, TSNE, PCA coordinates and additional cell metadata were provided courtesy of the authors.
+
+# Generate `SingleCellExperiment` object
+```{r}
+# Convert Seurat to SingleCellExperiment object
+s_sce<-as.SingleCellExperiment(s2, assay="RNA")
+
+# Format cell metadata
+s_sce$orig.ident<-NULL
+cols <- c("animal", "batch", "animal_type", "cell_type")
+colData(s_sce)[cols] <- lapply(colData(s_sce)[cols], factor)
+
+# Add cell type colors matching paper
+metadata(s_sce)$cell_colors<-s2@misc$colours
+
+# Format reduced dim elements
+reducedDims(s_sce) <- reducedDims(s_sce)[c("PCA","TSNE")]
+colnames(reducedDim(s_sce, "TSNE")) <- c("TSNE1", "TSNE2")
+colnames(reducedDim(s_sce, "PCA")) <-  sub("_", "", colnames(reducedDim(s_sce, "PCA")))
+
+# Format row and column data
+colnames(s_sce) <- NULL
+rowData(s_sce) <- NULL
+
+# Retain only raw counts
+s_sce@assays@data@listData$logcounts <- NULL
+s_sce@assays@data@listData$scaledata <- NULL
+```
+
