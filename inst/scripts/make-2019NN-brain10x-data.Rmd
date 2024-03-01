@@ -65,6 +65,7 @@ Additional cell metadata and UMAP, TSNE, and PCA coordinates were provided
 courtesy of the authors.
 
 # Generate `SingleCellExperiment` object
+
 ```{r}
 # Convert Seurat to SingleCellExperiment object
 s_sce<-as.SingleCellExperiment(s2, assay="RNA")
@@ -89,4 +90,20 @@ rowData(s_sce) <- NULL
 # Retain only raw counts
 s_sce@assays@data@listData$logcounts <- NULL
 s_sce@assays@data@listData$scaledata <- NULL
+```
+
+# Save `SingleCellExperiment` object
+
+```{r}
+saveRDS(s_sce, "brain10x_2019NN.rds")
+```
+
+# References
+
+Ximerakis, M., Lipnick, S.L., Innes, B.T. et al. Single-cell transcriptomic profiling of the aging mouse brain. *Nat Neurosci* 22, 1696–1708 (2019). <DOI:https://doi.org/10.1038/s41593-019-0491-3>.
+
+# Session info
+
+```{r}
+sessionInfo()
 ```
