@@ -1,7 +1,7 @@
 ---
-title: "Preparing Ximerakis 2019NN brain 10x droplet dataset for ExperimentHub"
+title: "Preparing Ximerakis 2019NN aging brain 10x droplet dataset for ExperimentHub"
 author: "Tram Nguyen"
-date: "2024-03-01"
+date: "2024-03-21"
 output: html_document
 editor_options: 
   markdown: 
@@ -67,8 +67,12 @@ courtesy of the authors.
 # Generate `SingleCellExperiment` object
 
 ```{r}
+library(dplyr)
+library(tidyr)
+library(SingleCellExperiment)
+
 # Convert Seurat to SingleCellExperiment object
-s_sce<-as.SingleCellExperiment(s2, assay="RNA")
+s_sce <- as.SingleCellExperiment(s2, assay="RNA")
 
 # Format cell metadata
 s_sce$orig.ident <- NULL
@@ -93,6 +97,35 @@ rowData(s_sce)$geneID <- rownames(s_sce)
 # Retain only raw counts
 s_sce@assays@data@listData$logcounts <- NULL
 s_sce@assays@data@listData$scaledata <- NULL
+
+# Add Cell Ontology labels provided by authors
+CO <- read.csv("~/MouseAgingData_data/2019nn_co.csv")
+
+# Relabel csv column names. CO class and id are switched
+colnames(CO) <- c("cell_type", "cell_ontology_class", "cell_ontology_id")
+
+# Retain original cell_type levels
+cell_levels <- levels(colData(s_sce)$cell_type)
+
+# left join CO terms
+colData(s_sce) <- DataFrame(colData(s_sce) %>% as_tibble() %>% 
+                                left_join(CO, by = "cell_type"))
+
+# Set levels for cell_type, cell_ontology_id, and cell_ontology_class
+# Reorder levels based on aging biology and authors' study
+colData(s_sce)$cell_type <- factor(colData(s_sce)$cell_type, levels = cell_levels)
+levels(colData(s_sce)$cell_type) # check
+
+colData(s_sce)$cell_ontology_class <- factor(colData(s_sce)$cell_ontology_class, 
+                                             levels = unique(CO$cell_ontology_class), 
+                                             exclude = NULL)
+
+colData(s_sce)$cell_ontology_id <- factor(colData(s_sce)$cell_ontology_id, 
+                                          levels = unique(CO$cell_ontology_id), 
+                                          exclude = NULL)
+
+dim(s_sce)
+# should be 14699 37089
 ```
 
 # Save `SingleCellExperiment` object
