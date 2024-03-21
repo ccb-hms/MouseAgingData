@@ -126,6 +126,10 @@ colData(s_sce)$cell_ontology_id <- factor(colData(s_sce)$cell_ontology_id,
 
 dim(s_sce)
 # should be 14699 37089
+
+# If we want log normalized counts, use scuttle. Not included in this package.
+# s_sce <- scuttle::logNormCounts(s_sce)
+# saveRDS(s_sce, "brain10x_2019NN_iSee_sce.rds")
 ```
 
 # Save `SingleCellExperiment` object

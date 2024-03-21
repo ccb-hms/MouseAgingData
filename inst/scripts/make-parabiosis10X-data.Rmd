@@ -104,7 +104,7 @@ names(colData(sce))[which(names(colData(sce)) =="percent.ribo")] <-
 counts(sce)[1:10, 1:10]
 
 # Load in HVG from the authors
-hvg <- readRDS("~/Desktop/all_lin_hvg.v1.rds")
+hvg <- readRDS("~/all_lin_hvg.v1.rds")
 
 # Create a new column using dplyr's mutate function
 rowData(sce)$geneID <- rownames(sce)
@@ -127,10 +127,41 @@ cols <-
 
 colData(sce)[cols] <- lapply(colData(sce)[cols], factor)
 
-# Incorporate UMAP, TSNE, and PCA coordinates provided by the authors
-TSNE_coord <- readRDS("~/Documents/Rubin Mouse Aging/data/parabiosis/norm_files/tsne_original.rds")
 
-UMAP_coord <- readRDS("~/Documents/Rubin Mouse Aging/data/parabiosis/norm_files/umap_original.rds")
+# Add Cell Ontology labels provided by authors
+CO <- read.csv("~/2023na_co.csv")
+
+# Relabel csv column names. CO class and id are switched
+colnames(CO) <- c("cell_type", "cell_ontology_class", "cell_ontology_id")
+
+# Match levels to match CO cell type order
+cell_levels <- CO$cell_type
+
+# left join CO terms
+colData(sce) <- DataFrame(colData(sce) %>% as_tibble() %>% 
+                                left_join(CO, by = "cell_type"))
+
+# Set levels for cell_type, cell_ontology_id, and cell_ontology_class
+# Reorder levels based on aging biology and authors' study
+colData(sce)$cell_type <- factor(colData(sce)$cell_type, levels = cell_levels)
+levels(colData(sce)$cell_type) # check
+
+colData(sce)$cell_ontology_class <- factor(colData(sce)$cell_ontology_class, 
+                                             levels = unique(CO$cell_ontology_class), 
+                                             exclude = NULL)
+
+colData(sce)$cell_ontology_id <- factor(colData(sce)$cell_ontology_id, 
+                                          levels = unique(CO$cell_ontology_id), 
+                                          exclude = NULL)
+
+# If we want log normalized counts, use scuttle Not included here.
+# sce <- scuttle::logNormCounts(sce)
+# saveRDS(sce, "parabiosis_iSee_sce.rds")
+
+# Incorporate UMAP, TSNE, and PCA coordinates provided by the authors
+TSNE_coord <- readRDS("~/tsne_original.rds")
+
+UMAP_coord <- readRDS("~/umap_original.rds")
 
 pca_coord <- readRDS("../pca_original.rds")
 pc50 <- pca_coord@cell.embeddings 
@@ -182,7 +213,7 @@ sce
 # Save `SingleCellExperiment` object
 
 ```{r}
-saveRDS(sce, "parabiosis_sce.rds")
+saveRDS(sce, "~/MouseAgingData_data/parabiosis_sce_v2.rds")
 ```
 
 # References
