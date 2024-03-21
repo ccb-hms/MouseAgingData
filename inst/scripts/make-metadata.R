@@ -24,12 +24,12 @@ Parabiosis10x <- data.frame(
     stringsAsFactors = FALSE
 )
 
-# Brain10x_2019NN
-Brain10x_2019NN <- data.frame(
-    Title = "Brain10x_2019NN",
+# AgingBrain10x_2019NN
+AgingBrain10x_2019NN <- data.frame(
+    Title = "AgingBrain10x_2019NN",
     Description = paste0("10x Genomics processed single-cell dataset ",
                          "from Ximerakis et al. 2019"),
-    BiocVersion = "3.19",
+    BiocVersion = "3.20",
     Genome = "mm10",
     SourceType = "RDS",
     SourceUrl = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE129788",
@@ -48,7 +48,7 @@ Brain10x_2019NN <- data.frame(
 # Combined meta-data
 df_all <- base::rbind(
     Parabiosis10x, 
-    Brain10x_2019NN
+    AgingBrain10x_2019NN
 )
 
 # Save .csv file
