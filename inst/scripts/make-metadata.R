@@ -29,7 +29,7 @@ AgingBrain10x_2019NN <- data.frame(
     Title = "AgingBrain10x_2019NN",
     Description = paste0("10x Genomics processed single-cell dataset ",
                          "from Ximerakis et al. 2019"),
-    BiocVersion = "3.20",
+    BiocVersion = "3.19",
     Genome = "mm10",
     SourceType = "RDS",
     SourceUrl = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE129788",
