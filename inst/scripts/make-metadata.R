@@ -41,7 +41,7 @@ AgingBrain10x_2019NN <- data.frame(
     Maintainer = "Tram Nguyen <Tram_Nguyen@hms.harvard.edu>",
     RDataClass = "SingleCellExperiment",
     DispatchClass = "RDS",
-    RDataPath = "MouseAgingData/brain10x_2019NN",
+    RDataPath = "MouseAgingData/brain10x_2019NN.rds",
     stringsAsFactors = FALSE
 )
 
