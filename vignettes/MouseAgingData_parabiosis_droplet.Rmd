@@ -91,8 +91,9 @@ wells of the plate.
 
 The `MouseAgingData` package provides analysis-ready data from an aging mouse
 brain parabiosis single cell study by Ximerakis & Holton et al.,
-([2023](https://pubmed.ncbi.nlm.nih.gov/37118429/)). The contents of the package
-can be accessed by querying ExperimentHub with the package name.
+([2023](https://pubmed.ncbi.nlm.nih.gov/37118429/)) and additional datasets. 
+The contents of the package can be accessed by querying ExperimentHub with the 
+package name.
 
 
 # Data
