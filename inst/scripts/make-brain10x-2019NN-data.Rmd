@@ -1,7 +1,7 @@
 ---
 title: "Preparing Ximerakis 2019NN aging brain 10x droplet dataset for ExperimentHub"
 author: "Tram Nguyen"
-date: "2024-03-21"
+date: "2024-03-27"
 output: html_document
 editor_options: 
   markdown: 
@@ -61,7 +61,7 @@ representing 25 cell types and 14699 features.
 The raw, unprocessed data for the 16 mice samples are available for download 
 through GEO with accession number [GSE129788](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE12978).
 
-Additional cell metadata and UMAP, TSNE, and PCA coordinates were provided 
+Additional cell metadata, TSNE and PCA coordinates were provided 
 courtesy of the authors.
 
 # Generate `SingleCellExperiment` object
