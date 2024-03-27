@@ -42,6 +42,8 @@
 #' \item{\code{percent_ribo}:}{Numeric, percentage of ribosomal content.}
 #' \item{\code{cell_type}:}{Factor, cell type to which the cell was assigned.}
 #' \item{\code{subpopulation}:}{Factor, cell subpopulation.}
+#' \item{\code{cell_ontology_class}:}{Factor, Cell Ontology label.}
+#' \item{\code{cell_ontology_id}:}{Factor, Cell Ontology identifier}
 #'}
 #'
 #'
@@ -62,7 +64,7 @@
 parabiosis10x <- function (metadata = FALSE)
 {
     eh <- ExperimentHub::ExperimentHub()
-    title <- "Parabiosis10X"
+    title <- "Parabiosis10x"
     
     eh <- AnnotationHub::query(eh, title)
     ehid <- eh$ah_id
