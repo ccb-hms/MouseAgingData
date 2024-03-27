@@ -19,11 +19,13 @@ Authors@R:
             role = "aut"))
 Description: This MouseAgingData package provides analysis-ready data
     resources from different studies focused on aging and rejuvenation in
-    mice. The package currently includes a 10x Genomics single-cell data
-    sets from an aging mouse brain parabiosis transcriptomic study
-    containing 105329 cells and 20905 features (Ximerakis & Holton et al.,
-    2023). The data is provided as a SingleCellExperiment R object and
-    includes a table of raw counts and cell metadata.
+    mice. The package includes two 10x Genomics single-cell data sets. The first
+    study profiled the aging mouse brain, and contains 37089 cells and 14699 
+    features (Ximerakis et al., 2019), and the second is a parabiosis 
+    transcriptomic study containing 105329 cells and 20905 features 
+    (Ximerakis & Holton et al., 2023). The data are provided as 
+    SingleCellExperiment R objects and includes a table of raw counts and cell 
+    metadata.
 License: Artistic-2.0
 URL: https://github.com/ccb-hms/MouseAgingData
 BugReports: https://github.com/ccb-hms/MouseAgingData/issues
