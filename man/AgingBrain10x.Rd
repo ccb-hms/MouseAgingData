@@ -46,7 +46,7 @@ the animal.}
 \item{\code{percent_ribo}:}{Numeric, percentage of ribosomal content.}
 \item{\code{cell_type}:}{Factor, cell type to which the cell was assigned.}
 \item{\code{cell_ontology_class}:}{Factor, Cell Ontology label.}
-\item{\code{cell_ontology_id}:}{Factor, Cell Ontology identification.}
+\item{\code{cell_ontology_id}:}{Factor, Cell Ontology identifier}
 }
 }
 
